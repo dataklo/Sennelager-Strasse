@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/sennelager-range
-ExecStart=/opt/sennelager-range/.venv/bin/python /opt/sennelager-range/app/web.py
+ExecStart=/opt/sennelager-range/.venv/bin/python -m app.web
 Restart=always
 RestartSec=5
 
