@@ -3,30 +3,81 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sennelager Range Access</title>
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ meta_description }}">
+  <meta name="keywords" content="Sennelager, Range Access, Truppenübungsplatz Senne, Öffnungszeiten, Kalender, Status">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="alternate" hreflang="de" href="{{ canonical_url }}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:image" content="{{ og_image_url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ meta_description }}">
+  <meta name="twitter:image" content="{{ og_image_url }}">
+  <meta name="theme-color" content="#1f9d55">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Sennelager Range Access","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{{ page_title }}","url":"{{ canonical_url }}","description":"{{ meta_description }}"}</script>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="status-bar {{ header_color }}">
     <div class="status-inner">
       <div>Aktueller Status: <strong>{{ header_label }}</strong></div>
-      <div class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</div>
     </div>
   </header>
 
   <main class="container">
     <h1>Sennelager Range Access</h1>
-    <p class="sub">Aktuelle Woche (Montag bis Sonntag)</p>
+    <p class="sub">Aktuelle Woche und alle verfügbaren zukünftigen Wochen</p>
 
-    <section class="calendar-row">
-      {% for day in week %}
-      <article class="day-card {{ day.color }} {% if day.is_past %}past{% endif %} {% if day.is_today %}today{% endif %}">
-        <div class="dow">{{ day.day }}</div>
-        <div class="dom">{{ day.day_num }}</div>
-        <div class="label">{{ day.label }}</div>
-      </article>
+    <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
+
+    <section class="mobile-upcoming">
+      <h2>Heute & kommende Tage</h2>
+      {% if upcoming_days %}
+      <ul class="upcoming-list">
+        {% for item in upcoming_days %}
+        <li class="upcoming-item {{ item.color }} {% if item.is_today %}today{% endif %}">
+          <span class="upcoming-date">{{ item.date_display }}</span>
+          <span class="upcoming-label">{{ item.label }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>Keine zukünftigen Termine verfügbar.</p>
+      {% endif %}
+    </section>
+
+    {% for month in month_blocks %}
+    <section class="month-block">
+      <h2>{{ month.title }}</h2>
+      {% for week in month.weeks %}
+      <div class="calendar-row">
+        {% for day in week %}
+        <article class="day-card {{ day.color }} {% if day.is_past %}past{% endif %} {% if day.is_today %}today{% endif %} {% if day.is_outside_month %}outside-month{% endif %}">
+          <div class="dow">{{ day.day }}</div>
+          <div class="dom">{{ day.day_num }}</div>
+          <div class="label">{{ day.label }}</div>
+        </article>
+        {% endfor %}
+      </div>
       {% endfor %}
     </section>
+    {% endfor %}
+    <section class="info-box">
+      <p>Die Senne ist eine Heidelandschaft in Ostwestfalen-Lippe und Teil des Naturraums am Teutoburger Wald. Mehr dazu bei <a href="https://de.wikipedia.org/wiki/Senne" target="_blank" rel="noopener noreferrer">Wikipedia</a>.</p>
+      <p class="source-note">Die hier angezeigten Informationen stammen von <a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">bfgnet.de/sennelager-range-access</a> und können ggf. veraltet sein.</p>
+    </section>
+
+    <footer class="site-footer">
+      <p>Privates Projekt ohne Gewähr auf Richtigkeit, Vollständigkeit und Aktualität der dargestellten Daten.</p>
+      <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+    </footer>
   </main>
 </body>
 </html>
