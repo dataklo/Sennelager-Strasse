@@ -51,16 +51,6 @@
   <main class="container">
     <h1>Senne Öffnungszeiten</h1>
     <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
-    <section class="legend">
-      <h2>Legende</h2>
-      <ul>
-        <li><span class="legend-chip green"></span> Geöffnet</li>
-        <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
-        <li><span class="legend-chip red"></span> Geschlossen</li>
-        <li><span class="legend-chip gray"></span> Unbekannt</li>
-      </ul>
-    </section>
-
     <section class="mobile-upcoming">
       <h2>Heute & kommende Tage</h2>
       {% if upcoming_days %}
@@ -80,6 +70,16 @@
     <section class="controls calendar-controls">
       <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
       <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
+    </section>
+
+    <section class="legend">
+      <h2>Legende</h2>
+      <ul>
+        <li><span class="legend-chip green"></span> Geöffnet</li>
+        <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
+        <li><span class="legend-chip red"></span> Geschlossen</li>
+        <li><span class="legend-chip gray"></span> Unbekannt</li>
+      </ul>
     </section>
 
     <div class="calendar-layout">
