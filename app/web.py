@@ -2,16 +2,22 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from flask import Flask, Response, render_template, request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from app import fetch_status
+
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "status_data.json"
 app = Flask(__name__, template_folder=str(Path(__file__).resolve().parent.parent / "templates"), static_folder=str(Path(__file__).resolve().parent.parent / "static"))
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "").rstrip("/")
+ALLOWED_HOSTS = [h.strip().lower() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()]
+STALE_MAX_AGE_HOURS = 30
+REFRESH_LOCK = threading.Lock()
 
 COLOR_MAP = {"open": "green", "closed": "red", "changing": "yellow", "unknown": "gray"}
 LABEL_MAP = {"open": "Geöffnet", "closed": "Geschlossen", "changing": "Öffnet/Schließt heute", "unknown": "Unbekannt"}
@@ -21,6 +27,37 @@ def load_data() -> dict:
     if not DATA_FILE.exists():
         return {"schedule": {}, "last_fetch_utc": None}
     return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+
+
+def parse_last_fetch(last_fetch_utc: str | None) -> datetime | None:
+    if not last_fetch_utc:
+        return None
+    try:
+        return datetime.fromisoformat(last_fetch_utc.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def needs_refresh(last_fetch_utc: str | None) -> bool:
+    dt = parse_last_fetch(last_fetch_utc)
+    if dt is None:
+        return True
+    age = datetime.now(dt.tzinfo) - dt
+    return age > timedelta(hours=STALE_MAX_AGE_HOURS)
+
+
+def refresh_if_stale() -> None:
+    data = load_data()
+    if not needs_refresh(data.get("last_fetch_utc")):
+        return
+    with REFRESH_LOCK:
+        latest = load_data()
+        if not needs_refresh(latest.get("last_fetch_utc")):
+            return
+        try:
+            fetch_status.run()
+        except Exception:
+            app.logger.exception("Automatic stale refresh failed")
 
 
 def week_days_monday_start(ref: date) -> list[date]:
@@ -93,6 +130,36 @@ def build_absolute_url(path: str) -> str:
     return f"{request.url_root.rstrip('/')}{path}"
 
 
+def is_host_allowed() -> bool:
+    if not ALLOWED_HOSTS:
+        return True
+    host = request.host.split(":", 1)[0].lower()
+    return host in ALLOWED_HOSTS
+
+
+@app.before_request
+def harden_request() -> tuple[str, int] | None:
+    if not is_host_allowed():
+        return ("Bad Request", 400)
+    return None
+
+
+@app.after_request
+def add_security_headers(resp: Response) -> Response:
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    resp.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    resp.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    resp.headers["Content-Security-Policy"] = (
+        "default-src 'self'; img-src 'self' data: https:; style-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
+    )
+    if request.is_secure:
+        resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return resp
+
+
 def upcoming_days(today: date, schedule: dict) -> list[dict]:
     future = []
     for iso, row in schedule.items():
@@ -158,6 +225,7 @@ def build_ics(schedule: dict) -> str:
 
 @app.route("/calendar.ics")
 def calendar_ics():
+    refresh_if_stale()
     data = load_data()
     schedule = data.get("schedule", {})
     return Response(build_ics(schedule), mimetype="text/calendar")
@@ -195,6 +263,7 @@ def datenschutz():
 
 @app.route("/")
 def index():
+    refresh_if_stale()
     data = load_data()
     schedule = data.get("schedule", {})
     today = date.today()

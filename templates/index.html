@@ -90,7 +90,7 @@
 
     <section class="ics-box">
       <p><strong>Kalender:</strong> Du kannst diesen Kalender auch als sich selbst aktualisierenden Kalender in Google abonnieren.</p>
-      <p><a href="/calendar.ics" id="google-calendar-link">Kalender in Google abonnieren (Auto-Update)</a></p>
+      <p><button type="button" id="open-ics-popup">Kalender-Link anzeigen</button></p>
     </section>
 
     <footer class="site-footer">
@@ -98,6 +98,19 @@
       <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
     </footer>
   </main>
+
+  <div class="ics-modal" id="ics-modal" hidden>
+    <div class="ics-modal-backdrop" data-close="ics-modal"></div>
+    <div class="ics-modal-card" role="dialog" aria-modal="true" aria-labelledby="ics-modal-title">
+      <h2 id="ics-modal-title">ICS-Link für Kalender-Abo</h2>
+      <p>Du kannst den Link per Rechtsklick kopieren oder direkt in deinen Kalender einfügen:</p>
+      <input type="text" id="ics-link-input" readonly>
+      <div class="ics-modal-actions">
+        <button type="button" id="copy-ics-link">Link kopieren</button>
+        <button type="button" data-close="ics-modal">Schließen</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -120,9 +133,33 @@
         localStorage.setItem(cbKey, body.classList.contains('colorblind') ? 'on' : 'off');
       });
 
-      document.getElementById('google-calendar-link')?.addEventListener('click', function () {
-        window.alert('Hinweis: Das ist ein privates Projekt ohne Gewähr auf Richtigkeit und Aktualität.');
+            const icsModal = document.getElementById('ics-modal');
+      const icsInput = document.getElementById('ics-link-input');
+      const icsLink = window.location.origin + '/calendar.ics';
+      if (icsInput) icsInput.value = icsLink;
+
+      document.getElementById('open-ics-popup')?.addEventListener('click', function () {
+        if (icsModal) icsModal.hidden = false;
       });
+
+      document.getElementById('copy-ics-link')?.addEventListener('click', async function () {
+        if (!icsInput) return;
+        icsInput.select();
+        icsInput.setSelectionRange(0, 99999);
+        try {
+          await navigator.clipboard.writeText(icsInput.value);
+          window.alert('Link in die Zwischenablage kopiert.');
+        } catch (err) {
+          window.alert('Kopieren fehlgeschlagen. Bitte den Link im Feld manuell kopieren.');
+        }
+      });
+
+      document.querySelectorAll('[data-close="ics-modal"]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          if (icsModal) icsModal.hidden = true;
+        });
+      });
+
     })();
   </script>
 </body>
