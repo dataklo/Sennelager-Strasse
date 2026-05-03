@@ -80,7 +80,7 @@ Das Update-Skript führt aus:
 ### Enthaltene Units
 
 - `sennelager-web.service`
-  - startet Flask-App via `.venv/bin/python /opt/sennelager-range/app/web.py`
+  - startet Flask-App via `.venv/bin/python -m app.web`
   - Restart-Policy: `always`
 - `sennelager-fetch.service`
   - One-shot Job zum Abruf/Parsing
@@ -141,8 +141,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -U pip
 pip install -r requirements.txt
-python app/fetch_status.py
-python app/web.py
+python -m app.fetch_status
+python -m app.web
 ```
 
 Danach lokal öffnen: `http://127.0.0.1:8080`
