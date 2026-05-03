@@ -19,7 +19,7 @@ body.theme-dark {
   --link: #6ea8fe;
 }
 body { margin: 0; background: var(--bg); color: var(--text); }
-.status-bar { color: #fff; padding: 18px; font-size: 1.2rem; }
+.status-bar { color: #fff; padding: 18px; font-size: 1.2rem; position: sticky; top: 0; z-index: 900; }
 .status-bar.green { background: var(--open); }
 .status-bar.yellow { background: var(--changing); }
 .status-bar.red { background: var(--closed); }
@@ -78,6 +78,8 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .site-footer p { margin: 6px 0; }
 .site-footer a { color: var(--link); }
 .legal-page { padding-top: 8px; padding-bottom: 20px; }
+.support-ad { margin: 16px 0; padding: 12px 14px; border: 2px dashed #94a3b8; border-radius: 10px; background: var(--panel); }
+.support-ad p { margin: 6px 0; }
 
 .mobile-upcoming { display: none; margin-bottom: 18px; }
 .upcoming-list { list-style: none; padding: 0; margin: 10px 0 0; }
@@ -92,6 +94,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 @media (max-width: 900px) {
   .mobile-upcoming { display: block; }
   .month-block { display: none; }
+  .support-ad { display: none; }
 }
 
 
