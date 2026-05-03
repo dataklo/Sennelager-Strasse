@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page_title }}</title>
   <meta name="description" content="{{ meta_description }}">
-  <meta name="keywords" content="Sennelager, Range Access, Truppenübungsplatz Senne, Öffnungszeiten, Kalender, Status">
+  <meta name="keywords" content="Senne, Truppenübungsplatz Senne, Öffnungszeiten, Kalender, Status">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <link rel="canonical" href="{{ canonical_url }}">
   <link rel="alternate" hreflang="de" href="{{ canonical_url }}">
@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="{{ meta_description }}">
   <meta name="twitter:image" content="{{ og_image_url }}">
   <meta name="theme-color" content="#1f9d55">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Sennelager Range Access","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Senne Öffnungszeiten","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE"}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{{ page_title }}","url":"{{ canonical_url }}","description":"{{ meta_description }}"}</script>
   <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -32,10 +32,29 @@
   </header>
 
   <main class="container">
-    <h1>Sennelager Range Access</h1>
-    <p class="sub">Aktuelle Woche und alle verfügbaren zukünftigen Wochen</p>
+    <h1>Senne Öffnungszeiten</h1>
 
     <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
+
+    <section class="controls">
+      <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
+      <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
+    </section>
+
+    <section class="legend">
+      <h2>Legende</h2>
+      <ul>
+        <li><span class="legend-chip green"></span> Geöffnet</li>
+        <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
+        <li><span class="legend-chip red"></span> Geschlossen</li>
+        <li><span class="legend-chip gray"></span> Unbekannt</li>
+      </ul>
+    </section>
+
+    <section class="ics-box">
+      <p><strong>Kalender-Import (ICS):</strong> Dieser Feed stammt aus einem privaten Projekt ohne Gewähr auf Richtigkeit oder Aktualität.</p>
+      <p><a href="/calendar.ics">ICS-Kalender abonnieren</a></p>
+    </section>
 
     <section class="mobile-upcoming">
       <h2>Heute & kommende Tage</h2>
@@ -79,5 +98,28 @@
       <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
     </footer>
   </main>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const body = document.body;
+      const themeKey = 'theme';
+      const cbKey = 'colorblind';
+      const savedTheme = localStorage.getItem(themeKey);
+      const savedCb = localStorage.getItem(cbKey);
+      if (savedTheme === 'dark') body.classList.add('theme-dark');
+      if (savedCb === 'on') body.classList.add('colorblind');
+
+      document.getElementById('theme-toggle')?.addEventListener('click', function () {
+        body.classList.toggle('theme-dark');
+        localStorage.setItem(themeKey, body.classList.contains('theme-dark') ? 'dark' : 'light');
+      });
+
+      document.getElementById('cb-toggle')?.addEventListener('click', function () {
+        body.classList.toggle('colorblind');
+        localStorage.setItem(cbKey, body.classList.contains('colorblind') ? 'on' : 'off');
+      });
+    })();
+  </script>
 </body>
 </html>
