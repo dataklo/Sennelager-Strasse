@@ -27,6 +27,10 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .status-inner { max-width: 1200px; margin: 0 auto; }
 .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
 .calendar-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 8px; }
+
+.calendar-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.calendar-main { min-width: 0; }
+
 .day-card { border-radius: 10px; padding: 12px; color: #fff; min-height: 120px; }
 .day-card .dow { font-weight: 700; text-transform: uppercase; }
 .day-card .dom { font-size: 2rem; margin: 10px 0; }
@@ -48,9 +52,10 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .outside-month { opacity: 0.45; }
 
 
-.controls { display: flex; gap: 10px; margin: 10px 0 14px; }
+.legend-controls-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin: 8px 0 14px; }
+.controls { display: flex; gap: 10px; margin: 0; justify-content: flex-end; }
 .controls button { border: 1px solid #94a3b8; border-radius: 8px; background: transparent; color: var(--text); padding: 8px 10px; cursor: pointer; }
-.legend { margin: 8px 0 14px; }
+.legend { margin: 0; }
 .legend ul { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 12px; }
 .legend-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: middle; }
 .legend-chip.green { background: var(--open); }
@@ -79,6 +84,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .site-footer a { color: var(--link); }
 .legal-page { padding-top: 8px; padding-bottom: 20px; }
 .support-ad { margin: 16px 0; padding: 12px 14px; border: 2px dashed #94a3b8; border-radius: 10px; background: var(--panel); }
+.support-ad-sticky { position: sticky; top: 92px; margin: 0; }
 .support-ad p { margin: 6px 0; }
 
 .mobile-upcoming { display: none; margin-bottom: 18px; }
@@ -92,9 +98,12 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .upcoming-item.today { outline: 2px solid #0d6efd; }
 
 @media (max-width: 900px) {
+  .legend-controls-row { flex-direction: column; }
+  .controls { width: 100%; justify-content: flex-start; }
+  .calendar-layout { grid-template-columns: 1fr; }
   .mobile-upcoming { display: block; }
   .month-block { display: none; }
-  .support-ad { display: none; }
+  .support-ad-sticky { display: none; }
 }
 
 

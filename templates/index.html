@@ -39,22 +39,22 @@
     <h1>Senne Öffnungszeiten</h1>
 
     <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
-    <p><a href="/heute-geoeffnet">👉 Ist die Senne heute geöffnet?</a></p>
+    <div class="legend-controls-row">
+      <section class="legend">
+        <h2>Legende</h2>
+        <ul>
+          <li><span class="legend-chip green"></span> Geöffnet</li>
+          <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
+          <li><span class="legend-chip red"></span> Geschlossen</li>
+          <li><span class="legend-chip gray"></span> Unbekannt</li>
+        </ul>
+      </section>
 
-    <section class="controls">
-      <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
-      <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
-    </section>
-
-    <section class="legend">
-      <h2>Legende</h2>
-      <ul>
-        <li><span class="legend-chip green"></span> Geöffnet</li>
-        <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
-        <li><span class="legend-chip red"></span> Geschlossen</li>
-        <li><span class="legend-chip gray"></span> Unbekannt</li>
-      </ul>
-    </section>
+      <section class="controls">
+        <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
+        <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
+      </section>
+    </div>
 
     <section class="mobile-upcoming">
       <h2>Heute & kommende Tage</h2>
@@ -72,6 +72,8 @@
       {% endif %}
     </section>
 
+    <div class="calendar-layout">
+      <div class="calendar-main">
     {% for month in month_blocks %}
     <section class="month-block">
       <h2>{{ month.title }}</h2>
@@ -88,6 +90,12 @@
       {% endfor %}
     </section>
     {% endfor %}
+      </div>
+      <aside class="support-ad support-ad-sticky" aria-label="Projekt unterstützen">
+        <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
+        <p>Dieses Projekt lebt von Menschen wie dir. Wenn dir die Seite hilft, unterstütze den Betrieb mit einem Hinweis, Feedback oder einer kleinen Spende.</p>
+      </aside>
+    </div>
     <section class="info-box">
       <p>Die Senne ist eine Heidelandschaft in Ostwestfalen-Lippe und Teil des Naturraums am Teutoburger Wald. Mehr dazu bei <a href="https://de.wikipedia.org/wiki/Senne" target="_blank" rel="noopener noreferrer">Wikipedia</a>.</p>
       <p class="source-note">Die hier angezeigten Informationen stammen von <a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">bfgnet.de/sennelager-range-access</a> und können ggf. veraltet sein.</p>
@@ -97,11 +105,6 @@
       <p><strong>Kalender:</strong> Du kannst diesen Kalender auch als sich selbst aktualisierenden Kalender in Google abonnieren.</p>
       <p><button type="button" id="open-ics-popup">Kalender-Link anzeigen</button></p>
     </section>
-    <aside class="support-ad" aria-label="Projekt unterstützen">
-      <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
-      <p>Dieses Projekt lebt von Menschen wie dir. Wenn dir die Seite hilft, unterstütze den Betrieb mit einem Hinweis, Feedback oder einer kleinen Spende.</p>
-    </aside>
-
     <footer class="site-footer">
       <p>Privates Projekt ohne Gewähr auf Richtigkeit, Vollständigkeit und Aktualität der dargestellten Daten.</p>
       <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
