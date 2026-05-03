@@ -108,6 +108,14 @@ sudo systemctl start sennelager-fetch.service
 systemctl list-timers sennelager-fetch.timer
 ```
 
+## Wichtiger Betriebs-Hinweis (Proxy)
+
+Der Container läuft **hinter einem Proxy**.
+
+- Der Webserver muss immer auf **`0.0.0.0:8080`** gebunden bleiben.
+- Änderungen auf `127.0.0.1`, einen anderen Port oder abweichende Bind-Adressen brechen die Erreichbarkeit hinter dem Proxy.
+- Bei Änderungen an `app/web.py`, Service-Dateien oder Startskripten diesen Punkt immer zuerst prüfen.
+
 ## Konfiguration
 
 ### Umgebungsvariable `SITE_DOMAIN` (optional)

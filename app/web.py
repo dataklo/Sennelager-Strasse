@@ -130,11 +130,30 @@ def build_absolute_url(path: str) -> str:
     return f"{request.url_root.rstrip('/')}{path}"
 
 
+def _normalized_host(value: str) -> str:
+    first = value.split(",", 1)[0].strip().lower()
+    return first.split(":", 1)[0]
+
+
 def is_host_allowed() -> bool:
     if not ALLOWED_HOSTS:
         return True
-    host = request.host.split(":", 1)[0].lower()
-    return host in ALLOWED_HOSTS
+
+    candidates = {
+        _normalized_host(request.host),
+        _normalized_host(request.headers.get("X-Forwarded-Host", request.host)),
+    }
+
+    for allowed in ALLOWED_HOSTS:
+        allowed = allowed.lower()
+        if allowed.startswith("."):
+            if any(host.endswith(allowed) for host in candidates):
+                return True
+            continue
+        if allowed in candidates:
+            return True
+
+    return False
 
 
 @app.before_request
