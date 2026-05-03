@@ -12,7 +12,7 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
-apt-get install -y git python3 python3-venv python3-pip ca-certificates
+apt-get install -y git curl python3 python3-venv python3-pip ca-certificates
 
 if [[ ! -d "$APP_DIR/.git" ]]; then
   git clone "$REPO_URL" "$APP_DIR"
@@ -39,4 +39,5 @@ systemctl enable --now sennelager-fetch.timer
 systemctl start sennelager-fetch.service || true
 
 echo "[OK] Installation abgeschlossen: http://<host>:8080"
-echo "[INFO] Update: sudo /opt/sennelager-range/scripts/update.sh"
+echo "[INFO] Update (Code + Dienste): sudo /opt/sennelager-range/scripts/update.sh"
+echo "[INFO] Manueller Datenabruf: sudo /opt/sennelager-range/scripts/manual-refresh.sh"

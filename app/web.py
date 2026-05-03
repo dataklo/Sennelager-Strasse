@@ -16,7 +16,10 @@ LABEL_MAP = {"open": "Geöffnet", "closed": "Geschlossen", "changing": "Öffnet/
 def load_data() -> dict:
     if not DATA_FILE.exists():
         return {"schedule": {}, "last_fetch_utc": None}
-    return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    try:
+        return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"schedule": {}, "last_fetch_utc": None}
 
 
 def week_days_monday_start(ref: date) -> list[date]:
