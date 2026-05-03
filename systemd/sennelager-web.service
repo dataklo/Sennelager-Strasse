@@ -1,0 +1,13 @@
+[Unit]
+Description=Sennelager Range Web App
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/sennelager-range
+ExecStart=/opt/sennelager-range/.venv/bin/python /opt/sennelager-range/app/web.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

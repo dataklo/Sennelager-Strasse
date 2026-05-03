@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily fetch timer for Sennelager Range
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+Unit=sennelager-fetch.service
+
+[Install]
+WantedBy=timers.target

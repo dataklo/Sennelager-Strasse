@@ -1,0 +1,24 @@
+:root { font-family: Arial, Helvetica, sans-serif; }
+body { margin: 0; background: #f5f7fa; color: #1d2733; }
+.status-bar { color: #fff; padding: 18px; font-size: 1.2rem; }
+.status-bar.green { background: #1f9d55; }
+.status-bar.yellow { background: #d8a106; }
+.status-bar.red { background: #cc3b3b; }
+.status-bar.gray { background: #6c757d; }
+.status-inner { max-width: 1200px; margin: 0 auto; }
+.container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+.calendar-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+.day-card { border-radius: 10px; padding: 12px; color: #fff; min-height: 120px; }
+.day-card .dow { font-weight: 700; text-transform: uppercase; }
+.day-card .dom { font-size: 2rem; margin: 10px 0; }
+.day-card .label { font-size: 0.95rem; }
+.day-card.green { background: #1f9d55; }
+.day-card.yellow { background: #d8a106; }
+.day-card.red { background: #cc3b3b; }
+.day-card.gray { background: #6c757d; }
+.day-card.past { filter: grayscale(35%); opacity: 0.72; }
+.day-card.today { outline: 3px solid #0d6efd; }
+.meta, .sub { color: #4d5b6a; }
+@media (max-width: 900px) {
+  .calendar-row { grid-template-columns: repeat(2, 1fr); }
+}
