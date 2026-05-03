@@ -22,3 +22,29 @@ body { margin: 0; background: #f5f7fa; color: #1d2733; }
 @media (max-width: 900px) {
   .calendar-row { grid-template-columns: repeat(2, 1fr); }
 }
+
+.month-block { margin-bottom: 28px; }
+.month-block h2 { margin: 8px 0 12px; }
+.outside-month { opacity: 0.45; }
+
+.info-box { margin-top: 20px; padding: 14px 16px; background: #e9eef5; border-radius: 8px; color: #2b3a49; }
+.info-box p { margin: 0 0 10px; }
+.info-box p:last-child { margin-bottom: 0; }
+.info-box a { color: #0b5ed7; }
+.source-note { font-size: 0.95rem; }
+
+.last-update { font-size: 0.8rem; text-align: right; margin: 0 0 8px; color: #4d5b6a; }
+
+.site-footer { margin: 26px 0 20px; padding-top: 14px; border-top: 1px solid #c9d4df; color: #3c4a58; font-size: 0.95rem; }
+.site-footer p { margin: 6px 0; }
+.site-footer a { color: #0b5ed7; }
+.legal-page { padding-top: 8px; padding-bottom: 20px; }
+
+.mobile-upcoming { display: none; margin-bottom: 18px; }
+.upcoming-list { list-style: none; padding: 0; margin: 10px 0 0; }
+.upcoming-item { border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; color: #fff; display: flex; justify-content: space-between; gap: 8px; }
+.upcoming-item .upcoming-date { font-weight: 700; }
+@media (max-width: 900px) {
+  .mobile-upcoming { display: block; }
+  .month-block { display: none; }
+}
