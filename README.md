@@ -118,32 +118,12 @@ Der Container läuft **hinter einem Proxy**.
 
 ## Konfiguration
 
-### Umgebungsvariable `SITE_DOMAIN` (optional)
+Keine Domain-Konfiguration notwendig. Die Anwendung erzeugt absolute URLs (z. B. für Canonical/Sitemap) immer aus dem aktuellen Request und funktioniert damit direkt über Proxy + öffentliche IPv4 auf Port `8080`.
 
-`app/web.py` nutzt optional `SITE_DOMAIN`, um absolute URLs für Canonical/Sitemap/Robots zu erzeugen.
+Wichtig:
 
-Beispiel:
-
-```bash
-SITE_DOMAIN=https://example.org
-```
-
-Wenn nicht gesetzt, wird die URL dynamisch aus dem Request (`request.url_root`) erzeugt.
-
-### Umgebungsvariable `ALLOWED_HOSTS` (optional)
-
-Komma-separierte Liste erlaubter Hostnamen für den Host-Header-Check (z. B. `example.org,www.example.org,.example.net`).
-
-- Ist `ALLOWED_HOSTS` leer, werden alle Hosts akzeptiert.
-- Subdomain-Wildcard über führenden Punkt ist möglich (z. B. `.example.org`).
-- IP-basierte Aufrufe (z. B. `http://<server-ip>:8080`) bleiben standardmäßig erlaubt.
-
-### Umgebungsvariable `ALLOW_IP_HOSTS` (optional, Standard: `true`)
-
-Steuert, ob direkte Zugriffe über IP-Literale trotz gesetzter `ALLOWED_HOSTS` akzeptiert werden.
-
-- `true` (Standard): Hostnamen **und** IP-Aufrufe sind erlaubt.
-- `false`: Es gelten ausschließlich Einträge aus `ALLOWED_HOSTS`.
+- Webserver-Bindung bleibt `0.0.0.0:8080`.
+- Der vorgelagerte Proxy soll Requests auf HTTP/8080 durchreichen.
 
 ## Datenformat (`data/status_data.json`)
 
