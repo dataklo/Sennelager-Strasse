@@ -67,15 +67,15 @@ def month_blocks(today: date, schedule: dict) -> list[dict]:
             for i in range(7):
                 d = week_cursor + timedelta(days=i)
                 in_month = d.month == cursor.month and d.year == cursor.year
-                row = schedule.get(d.isoformat(), {"status": "unknown"}) if in_month else {"status": "unknown"}
+                row = schedule.get(d.isoformat(), {"status": "unknown"})
                 st = row.get("status", "unknown")
                 week_days.append({
                     "day": d.strftime("%a"),
                     "day_num": d.day,
                     "label": LABEL_MAP.get(st, "Unbekannt"),
-                    "color": COLOR_MAP.get(st, "gray") if in_month else "gray",
-                    "is_past": in_month and d < today,
-                    "is_today": in_month and d == today,
+                    "color": COLOR_MAP.get(st, "gray"),
+                    "is_past": d < today,
+                    "is_today": d == today,
                     "is_outside_month": not in_month,
                 })
             weeks.append(week_days)
@@ -115,6 +115,52 @@ def upcoming_days(today: date, schedule: dict) -> list[dict]:
         }
         for d, st in future
     ]
+
+
+def build_ics(schedule: dict) -> str:
+    rows = []
+    for iso, row in schedule.items():
+        try:
+            d = date.fromisoformat(iso)
+        except ValueError:
+            continue
+        st = row.get("status", "unknown")
+        label = LABEL_MAP.get(st, "Unbekannt")
+        stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        start = d.strftime("%Y%m%d")
+        end = (d + timedelta(days=1)).strftime("%Y%m%d")
+        uid = f"senne-{iso}-{st}@range-access"
+        rows.append((d, "\n".join([
+            "BEGIN:VEVENT",
+            f"UID:{uid}",
+            f"DTSTAMP:{stamp}",
+            f"DTSTART;VALUE=DATE:{start}",
+            f"DTEND;VALUE=DATE:{end}",
+            f"SUMMARY:Senne Öffnungszeiten – {label}",
+            "DESCRIPTION:Privates Projekt ohne Gewähr. Quelle: bfgnet.de/sennelager-range-access",
+            "END:VEVENT",
+        ])))
+
+    rows.sort(key=lambda item: item[0])
+    events = "\n".join(event for _, event in rows)
+    return "\n".join([
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Senne Oeffnungszeiten//DE",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "X-WR-CALNAME:Senne Öffnungszeiten",
+        events,
+        "END:VCALENDAR",
+        "",
+    ])
+
+
+@app.route("/calendar.ics")
+def calendar_ics():
+    data = load_data()
+    schedule = data.get("schedule", {})
+    return Response(build_ics(schedule), mimetype="text/calendar")
 
 
 @app.route("/robots.txt")
@@ -161,8 +207,8 @@ def index():
         month_blocks=month_blocks(today, schedule),
         last_fetch_display=format_last_fetch(data.get("last_fetch_utc")),
         canonical_url=build_absolute_url("/"),
-        page_title="Sennelager Range Access – Statuskalender",
-        meta_description="Aktuelle Woche und zukünftige Termine für den Sennelager Range Access mit Statusübersicht und Kalenderansicht.",
+        page_title="Senne Öffnungszeiten",
+        meta_description="Aktuelle Woche und zukünftige Termine für Senne Öffnungszeiten mit Statusübersicht und Kalenderansicht.",
         og_image_url=build_absolute_url("/static/og-image.png"),
         upcoming_days=upcoming_days(today, schedule),
     )
