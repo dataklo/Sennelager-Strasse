@@ -69,7 +69,7 @@ h1 { font-size: clamp(1.8rem, 2.8vw, 2.6rem); margin: 10px 0 6px; }
 .month-block .calendar-row:last-child { margin-bottom: 0; }
 .outside-month { opacity: 0.42; }
 .controls { display: flex; gap: 10px; margin: 0; justify-content: flex-end; }
-.calendar-controls { justify-content: flex-start; margin: 6px 0 8px; }
+.calendar-controls { justify-content: flex-end; margin: 6px 0 8px; }
 .controls button, .ics-box button, .ics-modal-actions button {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -121,7 +121,7 @@ h1 { font-size: clamp(1.8rem, 2.8vw, 2.6rem); margin: 10px 0 6px; }
 .upcoming-item.red { background: linear-gradient(90deg, #b91c1c, var(--closed)); }
 .upcoming-item.gray { background: linear-gradient(90deg, #475569, var(--unknown)); }
 .upcoming-item.today { outline: 2px solid #60a5fa; }
-@media (max-width: 900px) { .controls { width: 100%; justify-content: flex-start; } .calendar-controls { margin: 6px 0 8px; } .mobile-upcoming { display: block; } .month-block { display: none; } }
+@media (max-width: 900px) { .controls { width: 100%; justify-content: flex-start; } .calendar-controls { justify-content: flex-end; margin: 6px 0 8px; } .mobile-upcoming { display: block; } .month-block { display: none; } }
 
 .ics-modal[hidden] { display: none; }
 .ics-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
