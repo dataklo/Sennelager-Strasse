@@ -28,7 +28,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
 .calendar-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 8px; }
 
-.calendar-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.calendar-layout { display: block; }
 .calendar-main { min-width: 0; }
 
 .day-card { border-radius: 10px; padding: 12px; color: #fff; min-height: 120px; }
@@ -83,9 +83,27 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .site-footer p { margin: 6px 0; }
 .site-footer a { color: var(--link); }
 .legal-page { padding-top: 8px; padding-bottom: 20px; }
-.support-ad { margin: 16px 0; padding: 12px 14px; border: 2px dashed #94a3b8; border-radius: 10px; background: var(--panel); }
-.support-ad-sticky { position: sticky; top: 92px; margin: 0; }
-.support-ad p { margin: 6px 0; }
+
+
+.side-rail-ad {
+  position: fixed;
+  top: 50%;
+  width: min(260px, calc((100vw - 1200px) / 2 - 24px));
+  min-width: 180px;
+  padding: 12px 14px;
+  border: 2px dashed #94a3b8;
+  border-radius: 10px;
+  background: var(--panel);
+  z-index: 850;
+  transform: translateY(-50%);
+}
+.side-rail-left { left: 12px; }
+.side-rail-right { right: 12px; }
+.side-rail-ad p { margin: 6px 0; }
+
+@media (max-width: 1500px) {
+  .side-rail-ad { display: none; }
+}
 
 .mobile-upcoming { display: none; margin-bottom: 18px; }
 .upcoming-list { list-style: none; padding: 0; margin: 10px 0 0; }
@@ -100,10 +118,8 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 @media (max-width: 900px) {
   .legend-controls-row { flex-direction: column; }
   .controls { width: 100%; justify-content: flex-start; }
-  .calendar-layout { grid-template-columns: 1fr; }
   .mobile-upcoming { display: block; }
   .month-block { display: none; }
-  .support-ad-sticky { display: none; }
 }
 
 
