@@ -50,25 +50,16 @@
 
   <main class="container">
     <h1>Senne Öffnungszeiten</h1>
-    <p class="meta sub">Modern, klar und auf einen Blick verständlich – mit Live-Status für heute und die kommenden Tage.</p>
-
     <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
-    <div class="legend-controls-row">
-      <section class="legend">
-        <h2>Legende</h2>
-        <ul>
-          <li><span class="legend-chip green"></span> Geöffnet</li>
-          <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
-          <li><span class="legend-chip red"></span> Geschlossen</li>
-          <li><span class="legend-chip gray"></span> Unbekannt</li>
-        </ul>
-      </section>
-
-      <section class="controls">
-        <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
-        <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
-      </section>
-    </div>
+    <section class="legend">
+      <h2>Legende</h2>
+      <ul>
+        <li><span class="legend-chip green"></span> Geöffnet</li>
+        <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
+        <li><span class="legend-chip red"></span> Geschlossen</li>
+        <li><span class="legend-chip gray"></span> Unbekannt</li>
+      </ul>
+    </section>
 
     <section class="mobile-upcoming">
       <h2>Heute & kommende Tage</h2>
@@ -84,6 +75,11 @@
       {% else %}
       <p>Keine zukünftigen Termine verfügbar.</p>
       {% endif %}
+    </section>
+
+    <section class="controls calendar-controls">
+      <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
+      <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
     </section>
 
     <div class="calendar-layout">
