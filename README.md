@@ -130,6 +130,21 @@ SITE_DOMAIN=https://example.org
 
 Wenn nicht gesetzt, wird die URL dynamisch aus dem Request (`request.url_root`) erzeugt.
 
+### Umgebungsvariable `ALLOWED_HOSTS` (optional)
+
+Komma-separierte Liste erlaubter Hostnamen für den Host-Header-Check (z. B. `example.org,www.example.org,.example.net`).
+
+- Ist `ALLOWED_HOSTS` leer, werden alle Hosts akzeptiert.
+- Subdomain-Wildcard über führenden Punkt ist möglich (z. B. `.example.org`).
+- IP-basierte Aufrufe (z. B. `http://<server-ip>:8080`) bleiben standardmäßig erlaubt.
+
+### Umgebungsvariable `ALLOW_IP_HOSTS` (optional, Standard: `true`)
+
+Steuert, ob direkte Zugriffe über IP-Literale trotz gesetzter `ALLOWED_HOSTS` akzeptiert werden.
+
+- `true` (Standard): Hostnamen **und** IP-Aufrufe sind erlaubt.
+- `false`: Es gelten ausschließlich Einträge aus `ALLOWED_HOSTS`.
+
 ## Datenformat (`data/status_data.json`)
 
 Typische Felder:

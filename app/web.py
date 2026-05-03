@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import threading
+import ipaddress
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -16,6 +17,7 @@ app = Flask(__name__, template_folder=str(Path(__file__).resolve().parent.parent
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "").rstrip("/")
 ALLOWED_HOSTS = [h.strip().lower() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()]
+ALLOW_IP_HOSTS = os.getenv("ALLOW_IP_HOSTS", "true").strip().lower() not in {"0", "false", "no", "off"}
 STALE_MAX_AGE_HOURS = 30
 REFRESH_LOCK = threading.Lock()
 
@@ -153,7 +155,18 @@ def is_host_allowed() -> bool:
         if allowed in candidates:
             return True
 
+    if ALLOW_IP_HOSTS and any(_is_ip_literal(host) for host in candidates):
+        return True
+
     return False
+
+
+def _is_ip_literal(host: str) -> bool:
+    try:
+        ipaddress.ip_address(host)
+        return True
+    except ValueError:
+        return False
 
 
 @app.before_request
