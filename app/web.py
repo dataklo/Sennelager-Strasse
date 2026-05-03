@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import json
-import os
 import threading
-import ipaddress
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -14,10 +12,7 @@ from app import fetch_status
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "status_data.json"
 app = Flask(__name__, template_folder=str(Path(__file__).resolve().parent.parent / "templates"), static_folder=str(Path(__file__).resolve().parent.parent / "static"))
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
-SITE_DOMAIN = os.getenv("SITE_DOMAIN", "").rstrip("/")
-ALLOWED_HOSTS = [h.strip().lower() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()]
-ALLOW_IP_HOSTS = os.getenv("ALLOW_IP_HOSTS", "true").strip().lower() not in {"0", "false", "no", "off"}
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 STALE_MAX_AGE_HOURS = 30
 REFRESH_LOCK = threading.Lock()
 
@@ -127,53 +122,9 @@ def month_blocks(today: date, schedule: dict) -> list[dict]:
 
 
 def build_absolute_url(path: str) -> str:
-    if SITE_DOMAIN:
-        return f"{SITE_DOMAIN}{path}"
     return f"{request.url_root.rstrip('/')}{path}"
 
 
-def _normalized_host(value: str) -> str:
-    first = value.split(",", 1)[0].strip().lower()
-    return first.split(":", 1)[0]
-
-
-def is_host_allowed() -> bool:
-    if not ALLOWED_HOSTS:
-        return True
-
-    candidates = {
-        _normalized_host(request.host),
-        _normalized_host(request.headers.get("X-Forwarded-Host", request.host)),
-    }
-
-    for allowed in ALLOWED_HOSTS:
-        allowed = allowed.lower()
-        if allowed.startswith("."):
-            if any(host.endswith(allowed) for host in candidates):
-                return True
-            continue
-        if allowed in candidates:
-            return True
-
-    if ALLOW_IP_HOSTS and any(_is_ip_literal(host) for host in candidates):
-        return True
-
-    return False
-
-
-def _is_ip_literal(host: str) -> bool:
-    try:
-        ipaddress.ip_address(host)
-        return True
-    except ValueError:
-        return False
-
-
-@app.before_request
-def harden_request() -> tuple[str, int] | None:
-    if not is_host_allowed():
-        return ("Bad Request", 400)
-    return None
 
 
 @app.after_request
