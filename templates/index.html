@@ -38,10 +38,14 @@
   <aside class="side-rail-ad side-rail-left" aria-label="Projekt unterstützen links">
     <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
     <p>Dieses Projekt lebt von Menschen wie dir. Wenn dir die Seite hilft, unterstütze den Betrieb mit einem Hinweis, Feedback oder einer kleinen Spende.</p>
+    <p>Du betreibst ein lokales Geschäft, einen Verein oder ein Event in der Region? Dann kannst du diese Fläche nutzen, um auf dein Angebot aufmerksam zu machen und gleichzeitig dieses freie Projekt zu unterstützen.</p>
+    <p>Bei Interesse freue ich mich über eine kurze Nachricht mit deinem Vorschlag für Inhalt und Laufzeit.</p>
   </aside>
   <aside class="side-rail-ad side-rail-right" aria-label="Projekt unterstützen rechts">
     <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
-    <p>Dieses Projekt lebt von Menschen wie dir. Wenn dir die Seite hilft, unterstütze den Betrieb mit einem Hinweis, Feedback oder einer kleinen Spende.</p>
+    <p>Diese Seite wird privat gepflegt und regelmäßig aktualisiert, damit alle schnell sehen, ob die Senne geöffnet ist. Damit das so bleibt, hilft jede Form von Unterstützung.</p>
+    <p>Wenn du die Seite nützlich findest, teile sie gern mit anderen, gib Feedback oder unterstütze den Betrieb mit einer kleinen Spende.</p>
+    <p>Du möchtest hier Werbung platzieren? Dann melde dich gern – fair, transparent und passend zum Projekt.</p>
   </aside>
 
   <main class="container">
@@ -103,7 +107,7 @@
     </div>
     <section class="info-box">
       <p>Die Senne ist eine Heidelandschaft in Ostwestfalen-Lippe und Teil des Naturraums am Teutoburger Wald. Mehr dazu bei <a href="https://de.wikipedia.org/wiki/Senne" target="_blank" rel="noopener noreferrer">Wikipedia</a>.</p>
-      <p class="source-note">Die hier angezeigten Informationen stammen von <a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">bfgnet.de/sennelager-range-access</a> und können ggf. veraltet sein.</p>
+      <p class="source-note">Die hier angezeigten Informationen stammen von <a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">bfgnet.de/sennelager-range-access</a> und können auf dieser Webseite ggf. veraltet sein.</p>
     </section>
 
     <section class="ics-box">
@@ -140,14 +144,28 @@
       if (savedTheme === 'dark') body.classList.add('theme-dark');
       if (savedCb === 'on') body.classList.add('colorblind');
 
-      document.getElementById('theme-toggle')?.addEventListener('click', function () {
+      const themeToggleButton = document.getElementById('theme-toggle');
+      const cbToggleButton = document.getElementById('cb-toggle');
+
+      function syncControlStates() {
+        const darkModeActive = body.classList.contains('theme-dark');
+        themeToggleButton?.classList.toggle('theme-inverse-dark', !darkModeActive);
+        themeToggleButton?.classList.toggle('theme-inverse-light', darkModeActive);
+        cbToggleButton?.classList.toggle('active', body.classList.contains('colorblind'));
+      }
+
+      syncControlStates();
+
+      themeToggleButton?.addEventListener('click', function () {
         body.classList.toggle('theme-dark');
         localStorage.setItem(themeKey, body.classList.contains('theme-dark') ? 'dark' : 'light');
+        syncControlStates();
       });
 
-      document.getElementById('cb-toggle')?.addEventListener('click', function () {
+      cbToggleButton?.addEventListener('click', function () {
         body.classList.toggle('colorblind');
         localStorage.setItem(cbKey, body.classList.contains('colorblind') ? 'on' : 'off');
+        syncControlStates();
       });
 
             const icsModal = document.getElementById('ics-modal');
