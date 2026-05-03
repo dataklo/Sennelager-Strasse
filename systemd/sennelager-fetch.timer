@@ -2,7 +2,8 @@
 Description=Daily fetch timer for Sennelager Range
 
 [Timer]
-OnCalendar=*-*-* 03:30:00
+OnCalendar=*-*-* 00:01:00
+RandomizedDelaySec=5h 58m
 Persistent=true
 Unit=sennelager-fetch.service
 

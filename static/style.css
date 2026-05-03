@@ -93,3 +93,13 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   .mobile-upcoming { display: block; }
   .month-block { display: none; }
 }
+
+
+.ics-box button { border: 1px solid #94a3b8; border-radius: 8px; background: transparent; color: var(--text); padding: 8px 10px; cursor: pointer; }
+.ics-modal[hidden] { display: none; }
+.ics-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.ics-modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+.ics-modal-card { position: relative; width: min(680px, calc(100% - 24px)); background: var(--bg); color: var(--text); border-radius: 10px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.ics-modal-card input { width: 100%; padding: 8px; margin: 8px 0 12px; border: 1px solid #94a3b8; border-radius: 8px; background: var(--panel); color: var(--text); }
+.ics-modal-actions { display: flex; gap: 10px; }
+.ics-modal-actions button { border: 1px solid #94a3b8; border-radius: 8px; background: transparent; color: var(--text); padding: 8px 10px; cursor: pointer; }

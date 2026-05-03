@@ -85,7 +85,9 @@ Das Update-Skript führt aus:
 - `sennelager-fetch.service`
   - One-shot Job zum Abruf/Parsing
 - `sennelager-fetch.timer`
-  - Zeitplan: täglich um `03:30:00` (Server-Lokalzeit)
+  - Zeitplan-Basis: täglich um `00:01:00` (Server-Lokalzeit)
+  - Zufällige Verzögerung: `RandomizedDelaySec=5h 58m`
+    - Effektiv läuft der Abruf pro Tag zufällig zwischen **00:01 und 05:59 Uhr**
   - `Persistent=true` (nachholen nach Reboot)
 
 ### Nützliche Befehle
@@ -101,6 +103,9 @@ journalctl -u sennelager-fetch.service -f
 
 # Fetch manuell anstoßen
 sudo systemctl start sennelager-fetch.service
+
+# Optional: sofort prüfen, wann der nächste automatische Lauf geplant ist
+systemctl list-timers sennelager-fetch.timer
 ```
 
 ## Konfiguration
