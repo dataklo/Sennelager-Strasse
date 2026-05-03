@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sennelager Range Access</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="status-bar {{ header_color }}">
+    <div class="status-inner">
+      <div>Aktueller Status: <strong>{{ header_label }}</strong></div>
+      <div class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Sennelager Range Access</h1>
+    <p class="sub">Aktuelle Woche (Montag bis Sonntag)</p>
+
+    <section class="calendar-row">
+      {% for day in week %}
+      <article class="day-card {{ day.color }} {% if day.is_past %}past{% endif %} {% if day.is_today %}today{% endif %}">
+        <div class="dow">{{ day.day }}</div>
+        <div class="dom">{{ day.day_num }}</div>
+        <div class="label">{{ day.label }}</div>
+      </article>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>
