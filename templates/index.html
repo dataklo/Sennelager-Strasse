@@ -51,11 +51,6 @@
       </ul>
     </section>
 
-    <section class="ics-box">
-      <p><strong>Kalender-Import (ICS):</strong> Dieser Feed stammt aus einem privaten Projekt ohne Gewähr auf Richtigkeit oder Aktualität.</p>
-      <p><a href="/calendar.ics">ICS-Kalender abonnieren</a></p>
-    </section>
-
     <section class="mobile-upcoming">
       <h2>Heute & kommende Tage</h2>
       {% if upcoming_days %}
@@ -93,6 +88,11 @@
       <p class="source-note">Die hier angezeigten Informationen stammen von <a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">bfgnet.de/sennelager-range-access</a> und können ggf. veraltet sein.</p>
     </section>
 
+    <section class="ics-box">
+      <p><strong>Kalender:</strong> Du kannst diesen Kalender auch als sich selbst aktualisierenden Kalender in Google abonnieren.</p>
+      <p><a href="/calendar.ics" id="google-calendar-link">Kalender in Google abonnieren (Auto-Update)</a></p>
+    </section>
+
     <footer class="site-footer">
       <p>Privates Projekt ohne Gewähr auf Richtigkeit, Vollständigkeit und Aktualität der dargestellten Daten.</p>
       <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
@@ -118,6 +118,10 @@
       document.getElementById('cb-toggle')?.addEventListener('click', function () {
         body.classList.toggle('colorblind');
         localStorage.setItem(cbKey, body.classList.contains('colorblind') ? 'on' : 'off');
+      });
+
+      document.getElementById('google-calendar-link')?.addEventListener('click', function () {
+        window.alert('Hinweis: Das ist ein privates Projekt ohne Gewähr auf Richtigkeit und Aktualität.');
       });
     })();
   </script>

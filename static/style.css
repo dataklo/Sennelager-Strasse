@@ -58,11 +58,15 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .legend-chip.red { background: var(--closed); }
 .legend-chip.gray { background: var(--unknown); }
 .ics-box { margin: 6px 0 14px; padding: 10px 12px; border: 1px dashed #94a3b8; border-radius: 8px; }
+.colorblind .status-bar.green { background: #0072B2; }
+.colorblind .status-bar.red { background: #D55E00; }
+.colorblind .status-bar.yellow { background: #CC79A7; }
+
 .colorblind .day-card.green, .colorblind .upcoming-item.green, .colorblind .legend-chip.green { background: #0072B2; }
 .colorblind .day-card.red, .colorblind .upcoming-item.red, .colorblind .legend-chip.red { background: #D55E00; }
 .colorblind .day-card.yellow, .colorblind .upcoming-item.yellow, .colorblind .legend-chip.yellow { background: #CC79A7; }
 
-.info-box { margin-top: 20px; padding: 14px 16px; background: var(--panel); border-radius: 8px; color: #2b3a49; }
+.info-box { margin-top: 20px; padding: 14px 16px; background: var(--panel); border-radius: 8px; color: var(--text); }
 .info-box p { margin: 0 0 10px; }
 .info-box p:last-child { margin-bottom: 0; }
 .info-box a { color: var(--link); }
@@ -70,7 +74,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 
 .last-update { font-size: 0.8rem; text-align: right; margin: 0 0 8px; color: var(--muted); }
 
-.site-footer { margin: 26px 0 20px; padding-top: 14px; border-top: 1px solid #c9d4df; color: #3c4a58; font-size: 0.95rem; }
+.site-footer { margin: 26px 0 20px; padding-top: 14px; border-top: 1px solid var(--muted); color: var(--muted); font-size: 0.95rem; }
 .site-footer p { margin: 6px 0; }
 .site-footer a { color: var(--link); }
 .legal-page { padding-top: 8px; padding-bottom: 20px; }
