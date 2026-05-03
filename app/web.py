@@ -4,6 +4,7 @@ import json
 import threading
 from datetime import date, datetime, timedelta
 from pathlib import Path
+import re
 
 from flask import Flask, Response, render_template, request
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -18,6 +19,23 @@ REFRESH_LOCK = threading.Lock()
 
 COLOR_MAP = {"open": "green", "closed": "red", "changing": "yellow", "unknown": "gray"}
 LABEL_MAP = {"open": "Geöffnet", "closed": "Geschlossen", "changing": "Öffnet/Schließt heute", "unknown": "Unbekannt"}
+
+
+def header_status_label(today_row: dict) -> str:
+    status = today_row.get("status", "unknown")
+    if status == "open":
+        return "Geöffnet"
+    if status == "closed":
+        return "Geschlossen"
+    if status != "changing":
+        return "Unbekannt"
+
+    times_text = str(today_row.get("times", "")).lower()
+    if re.search(r"(open\s+from|opens?\s+from|closed\s+until)", times_text):
+        return "wird heute Geöffnet"
+    if re.search(r"(closed\s+from|closes?\s+from|open\s+until)", times_text):
+        return "wird heute geschlossen"
+    return "Öffnet/Schließt heute"
 
 
 def load_data() -> dict:
@@ -244,6 +262,30 @@ def datenschutz():
     return render_template("datenschutz.html")
 
 
+@app.route("/heute-geoeffnet")
+def heute_geoeffnet():
+    refresh_if_stale()
+    data = load_data()
+    schedule = data.get("schedule", {})
+    today = date.today()
+    today_row = schedule.get(today.isoformat(), {"status": "unknown"})
+    today_status = today_row.get("status", "unknown")
+    seo_status_label = header_status_label(today_row)
+    return render_template(
+        "heute-geoeffnet.html",
+        header_color=COLOR_MAP.get(today_status, "gray"),
+        header_label=seo_status_label,
+        canonical_url=build_absolute_url("/heute-geoeffnet"),
+        page_title=f"Heute geöffnet? Senne Status am {today.strftime('%d.%m.%Y')}",
+        meta_description="Ist die Senne heute geöffnet oder geschlossen? Hier siehst du den aktuellen Tagesstatus plus Öffnungs-Kalender.",
+        og_image_url=build_absolute_url("/static/og-image.svg"),
+        seo_status_label=seo_status_label,
+        seo_today_iso=today.isoformat(),
+        seo_last_fetch=data.get("last_fetch_utc"),
+        last_fetch_display=format_last_fetch(data.get("last_fetch_utc")),
+    )
+
+
 @app.route("/")
 def index():
     refresh_if_stale()
@@ -251,18 +293,29 @@ def index():
     schedule = data.get("schedule", {})
     today = date.today()
 
-    today_status = schedule.get(today.isoformat(), {"status": "unknown"}).get("status", "unknown")
+    today_row = schedule.get(today.isoformat(), {"status": "unknown"})
+    today_status = today_row.get("status", "unknown")
+    seo_status_label = header_status_label(today_row)
+    seo_date = today.strftime("%d.%m.%Y")
+    page_title = f"Senne Öffnungszeiten heute ({seo_date}): {seo_status_label}"
+    meta_description = (
+        f"Aktueller Status vom Truppenübungsplatz Senne am {seo_date}: {seo_status_label}. "
+        "Mit Kalender, kommenden Öffnungs-/Schließtagen und iCal-Abo."
+    )
     return render_template(
         "index.html",
         header_color=COLOR_MAP.get(today_status, "gray"),
-        header_label=LABEL_MAP.get(today_status, "Unbekannt"),
+        header_label=seo_status_label,
         month_blocks=month_blocks(today, schedule),
         last_fetch_display=format_last_fetch(data.get("last_fetch_utc")),
         canonical_url=build_absolute_url("/"),
-        page_title="Senne Öffnungszeiten",
-        meta_description="Aktuelle Woche und zukünftige Termine für Senne Öffnungszeiten mit Statusübersicht und Kalenderansicht.",
-        og_image_url=build_absolute_url("/static/og-image.png"),
+        page_title=page_title,
+        meta_description=meta_description,
+        og_image_url=build_absolute_url("/static/og-image.svg"),
         upcoming_days=upcoming_days(today, schedule),
+        seo_status_label=seo_status_label,
+        seo_today_iso=today.isoformat(),
+        seo_last_fetch=data.get("last_fetch_utc"),
     )
 
 

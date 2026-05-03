@@ -9,25 +9,29 @@
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <link rel="canonical" href="{{ canonical_url }}">
   <link rel="alternate" hreflang="de" href="{{ canonical_url }}">
+  <link rel="alternate" hreflang="x-default" href="{{ canonical_url }}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="de_DE">
+  <meta property="og:site_name" content="Senne Öffnungszeiten">
   <meta property="og:title" content="{{ page_title }}">
   <meta property="og:description" content="{{ meta_description }}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:image" content="{{ og_image_url }}">
+  <meta property="og:image:alt" content="Statusübersicht Truppenübungsplatz Senne">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ page_title }}">
   <meta name="twitter:description" content="{{ meta_description }}">
   <meta name="twitter:image" content="{{ og_image_url }}">
+  <meta name="twitter:url" content="{{ canonical_url }}">
   <meta name="theme-color" content="#1f9d55">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Senne Öffnungszeiten","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE"}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{{ page_title }}","url":"{{ canonical_url }}","description":"{{ meta_description }}"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{{ page_title }}","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE","dateModified":"{{ seo_last_fetch or seo_today_iso }}","mainEntity":{"@type":"Thing","name":"Truppenübungsplatz Senne","description":"Aktueller Tagesstatus: {{ seo_status_label }}"}}</script>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="status-bar {{ header_color }}">
     <div class="status-inner">
-      <div>Aktueller Status: <strong>{{ header_label }}</strong></div>
+      <div>Truppenübungsplatz ist aktuell <strong>{{ header_label }}</strong></div>
     </div>
   </header>
 
@@ -35,6 +39,7 @@
     <h1>Senne Öffnungszeiten</h1>
 
     <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
+    <p><a href="/heute-geoeffnet">👉 Ist die Senne heute geöffnet?</a></p>
 
     <section class="controls">
       <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
@@ -92,6 +97,10 @@
       <p><strong>Kalender:</strong> Du kannst diesen Kalender auch als sich selbst aktualisierenden Kalender in Google abonnieren.</p>
       <p><button type="button" id="open-ics-popup">Kalender-Link anzeigen</button></p>
     </section>
+    <aside class="support-ad" aria-label="Projekt unterstützen">
+      <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
+      <p>Dieses Projekt lebt von Menschen wie dir. Wenn dir die Seite hilft, unterstütze den Betrieb mit einem Hinweis, Feedback oder einer kleinen Spende.</p>
+    </aside>
 
     <footer class="site-footer">
       <p>Privates Projekt ohne Gewähr auf Richtigkeit, Vollständigkeit und Aktualität der dargestellten Daten.</p>
@@ -150,6 +159,15 @@
           await navigator.clipboard.writeText(icsInput.value);
           window.alert('Link in die Zwischenablage kopiert.');
         } catch (err) {
+          try {
+            const copied = document.execCommand('copy');
+            if (copied) {
+              window.alert('Link in die Zwischenablage kopiert.');
+              return;
+            }
+          } catch (fallbackErr) {
+            // no-op; show generic message below
+          }
           window.alert('Kopieren fehlgeschlagen. Bitte den Link im Feld manuell kopieren.');
         }
       });

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ meta_description }}">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:image" content="{{ og_image_url }}">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="status-bar {{ header_color }}">
+  <div class="status-inner">Truppenübungsplatz ist aktuell <strong>{{ header_label }}</strong></div>
+</header>
+<main class="container">
+  <h1>Ist die Senne heute geöffnet?</h1>
+  <p>Stand heute ({{ seo_today_iso }}): <strong>{{ seo_status_label }}</strong></p>
+  <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
+  <p>Hier geht es zur kompletten Übersicht mit allen kommenden Tagen und Kalender-Abo:</p>
+  <p><a href="/">Zur Hauptseite Senne Öffnungszeiten</a></p>
+</main>
+</body>
+</html>
