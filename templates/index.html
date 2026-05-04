@@ -89,7 +89,8 @@
       <h2>{{ month.title }}</h2>
       {% for week in month.weeks %}
       <div class="calendar-row">
-        {% for day in week %}
+        <div class="calendar-week-label">KW {{ week.calendar_week }}</div>
+        {% for day in week.days %}
         <article class="day-card {{ day.color }} {% if day.is_past %}past{% endif %} {% if day.is_today %}today{% endif %} {% if day.is_outside_month %}outside-month{% endif %}">
           <div class="dow">{{ day.day }}</div>
           <div class="dom">{{ day.day_num }}</div>

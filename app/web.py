@@ -115,6 +115,10 @@ def month_blocks(today: date, schedule: dict) -> list[dict]:
         weeks = []
         week_cursor = start_week_monday
         while week_cursor <= end_week_sunday:
+            week_end = week_cursor + timedelta(days=6)
+            if week_end < today:
+                week_cursor += timedelta(days=7)
+                continue
             week_days = []
             for i in range(7):
                 d = week_cursor + timedelta(days=i)
@@ -130,7 +134,10 @@ def month_blocks(today: date, schedule: dict) -> list[dict]:
                     "is_today": d == today,
                     "is_outside_month": not in_month,
                 })
-            weeks.append(week_days)
+            weeks.append({
+                "calendar_week": week_cursor.isocalendar().week,
+                "days": week_days,
+            })
             week_cursor += timedelta(days=7)
 
         blocks.append({"title": cursor.strftime("%B %Y"), "weeks": weeks})
