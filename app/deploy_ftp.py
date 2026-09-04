@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import ftplib
 import os
 import posixpath
 import ssl
+import uuid
 from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -71,6 +73,33 @@ def ensure_ftp_directory(ftp: ftplib.FTP, base: str, relative: PurePosixPath) ->
             ftp.cwd(part)
 
 
+def replace_ftp_file(ftp: ftplib.FTP, temporary_name: str, destination_name: str) -> None:
+    """Promote an upload without deleting the last successfully published file."""
+    try:
+        # Servers which support an overwriting RNTO provide the atomic fast path.
+        ftp.rename(temporary_name, destination_name)
+        return
+    except ftplib.error_perm:
+        pass
+
+    backup_name = f".{destination_name}.backup-{uuid.uuid4().hex}"
+    try:
+        ftp.rename(destination_name, backup_name)
+    except ftplib.error_perm:
+        # There is no existing destination (or it cannot be moved). Retrying the
+        # promotion preserves the useful error while never deleting a live file.
+        ftp.rename(temporary_name, destination_name)
+        return
+
+    try:
+        ftp.rename(temporary_name, destination_name)
+    except ftplib.all_errors:
+        ftp.rename(backup_name, destination_name)
+        raise
+    else:
+        ftp.delete(backup_name)
+
+
 def upload_ftp_tree(ftp: ftplib.FTP, source: Path) -> int:
     base = ftp.pwd()
     count = 0
@@ -80,11 +109,7 @@ def upload_ftp_tree(ftp: ftplib.FTP, source: Path) -> int:
         temporary_name = f".{relative.name}.uploading"
         with local_file.open("rb") as handle:
             ftp.storbinary(f"STOR {temporary_name}", handle)
-        try:
-            ftp.delete(relative.name)
-        except ftplib.error_perm:
-            pass
-        ftp.rename(temporary_name, relative.name)
+        replace_ftp_file(ftp, temporary_name, relative.name)
         count += 1
     ftp.cwd(base)
     return count
@@ -128,6 +153,35 @@ def ensure_sftp_directory(sftp: Any, directory: str) -> None:
             sftp.mkdir(current)
 
 
+def replace_sftp_file(sftp: Any, temporary: str, destination: str) -> None:
+    """Atomically replace a file, with a rollback-safe fallback for old servers."""
+    posix_rename = getattr(sftp, "posix_rename", None)
+    if posix_rename is not None:
+        # The OpenSSH extension explicitly guarantees overwrite and atomicity.
+        try:
+            posix_rename(temporary, destination)
+            return
+        except OSError as exc:
+            unsupported_errors = {errno.ENOSYS, errno.EOPNOTSUPP}
+            if exc.errno not in unsupported_errors and "unsupported" not in str(exc).lower():
+                raise
+
+    backup = f"{destination}.backup-{uuid.uuid4().hex}"
+    try:
+        sftp.rename(destination, backup)
+    except OSError:
+        sftp.rename(temporary, destination)
+        return
+
+    try:
+        sftp.rename(temporary, destination)
+    except OSError:
+        sftp.rename(backup, destination)
+        raise
+    else:
+        sftp.remove(backup)
+
+
 def upload_sftp_tree(sftp: Any, source: Path) -> int:
     _, _, base = connection_settings()
     ensure_sftp_directory(sftp, base)
@@ -138,11 +192,7 @@ def upload_sftp_tree(sftp: Any, source: Path) -> int:
         ensure_sftp_directory(sftp, posixpath.dirname(remote_file))
         temporary = posixpath.join(posixpath.dirname(remote_file), f".{posixpath.basename(remote_file)}.uploading")
         sftp.put(str(local_file), temporary)
-        try:
-            sftp.remove(remote_file)
-        except OSError:
-            pass
-        sftp.rename(temporary, remote_file)
+        replace_sftp_file(sftp, temporary, remote_file)
         count += 1
     return count
 
