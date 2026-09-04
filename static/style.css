@@ -74,8 +74,10 @@ html[lang="en"] .day-card.today::after { content: "TODAY"; }
 .ad-area { display: contents; }
 .side-rail-ad { position: fixed; top: 50%; width: 160px; padding: 7px; transform: translateY(-50%); border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--muted); z-index: 10; }
 .side-rail-ad small { display: block; margin-bottom: 5px; text-align: center; font-size: .65rem; }
-.side-rail-ad img { display: block; width: 100%; height: auto; border-radius: 5px; }
-.side-rail-ad .ad-placeholder { margin: 0; padding: 18px 7px; text-align: center; font-size: .78rem; }
+.ad-creative { position: relative; min-height: 154px; }
+.side-rail-ad img { position: relative; z-index: 1; display: block; width: 100%; height: auto; border-radius: 5px; background: var(--surface); }
+.side-rail-ad img[hidden] { display: none; }
+.side-rail-ad .ad-placeholder { position: absolute; inset: 0; display: grid; align-content: center; margin: 0; padding: 18px 7px; text-align: center; font-size: .78rem; }
 .side-rail-ad .ad-placeholder p { margin: 8px 0 0; }
 .side-rail-left { left: max(8px, calc((100vw - var(--content)) / 2 - 176px)); } .side-rail-right { right: max(8px, calc((100vw - var(--content)) / 2 - 176px)); }
 .site-footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 20px; padding: 15px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
@@ -90,7 +92,7 @@ html[lang="en"] .day-card.today::after { content: "TODAY"; }
 @media (max-width: 1599px) {
   .ad-area { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
   .side-rail-ad { position: static; width: 100%; transform: none; }
-  .side-rail-ad img { width: min(160px, 100%); margin: 0 auto; }
+  .ad-creative { width: min(220px, 100%); min-height: 140px; margin: 0 auto; }
 }
 @media (min-width: 768px) and (max-width: 1199px) {
   .page-shell { width: min(100% - 28px, 1050px); } .next-days-grid { grid-template-columns: repeat(2, 1fr); }
@@ -111,7 +113,7 @@ html[lang="en"] .day-card.today::after { content: "TODAY"; }
   .calendar-subscribe, .site-footer { display: block; } .calendar-subscribe button { width: 100%; margin-top: 12px; }
   .ad-area { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
   .side-rail-ad { display: block; position: static; width: 100%; transform: none; }
-  .side-rail-ad img { width: min(220px, 100%); margin: 0 auto; }
+  .ad-creative { width: min(280px, 100%); }
   .site-footer p + p { margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
