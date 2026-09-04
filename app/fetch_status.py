@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import requests
@@ -79,7 +79,7 @@ def load_existing() -> dict:
 
 
 def run() -> None:
-    now = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    now = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     html = fetch_remote_html()
     schedule = parse_schedule_table(html)
 

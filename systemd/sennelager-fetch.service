@@ -1,9 +1,9 @@
 [Unit]
-Description=Fetch daily Sennelager Range status
+Description=Fetch, build and publish Sennelager website via FTPS
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/sennelager-range
-ExecStart=/opt/sennelager-range/.venv/bin/python /opt/sennelager-range/app/fetch_status.py
+ExecStart=/opt/sennelager-range/scripts/publish.sh

@@ -3,117 +3,107 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page_title }}</title>
-  <meta name="description" content="{{ meta_description }}">
-  <meta name="keywords" content="Senne, Truppenübungsplatz Senne, Öffnungszeiten, Kalender, Status">
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <title>Senne offen? – Aktueller Durchfahrtsstatus</title>
+  <meta name="description" content="Aktueller Durchfahrtsstatus und bekannte Sperrzeiten für die Straßen durch den Truppenübungsplatz Senne.">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
   <link rel="canonical" href="{{ canonical_url }}">
-  <link rel="alternate" hreflang="de" href="{{ canonical_url }}">
-  <link rel="alternate" hreflang="x-default" href="{{ canonical_url }}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="de_DE">
-  <meta property="og:site_name" content="Senne Öffnungszeiten">
-  <meta property="og:title" content="{{ page_title }}">
-  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:site_name" content="Senne Durchfahrtsstatus">
+  <meta property="og:title" content="Senne offen? – Aktueller Durchfahrtsstatus">
+  <meta property="og:description" content="Aktueller Durchfahrtsstatus und bekannte Sperrzeiten für die Straßen durch den Truppenübungsplatz Senne.">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:image" content="{{ og_image_url }}">
-  <meta property="og:image:alt" content="Statusübersicht Truppenübungsplatz Senne">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page_title }}">
-  <meta name="twitter:description" content="{{ meta_description }}">
-  <meta name="twitter:image" content="{{ og_image_url }}">
-  <meta name="twitter:url" content="{{ canonical_url }}">
-  <meta name="theme-color" content="#1f9d55">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Senne Öffnungszeiten","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE"}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{{ page_title }}","url":"{{ canonical_url }}","description":"{{ meta_description }}","inLanguage":"de-DE","dateModified":"{{ seo_last_fetch or seo_today_iso }}","mainEntity":{"@type":"Thing","name":"Truppenübungsplatz Senne","description":"Aktueller Tagesstatus: {{ seo_status_label }}"}}</script>
+  <meta name="theme-color" content="#176b3a">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header class="status-bar {{ header_color }}">
-    <div class="status-inner">
-      <div>Truppenübungsplatz ist aktuell <strong>{{ header_label }}</strong></div>
-    </div>
-  </header>
+  <main class="page-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Senne Durchfahrtsstatus</p>
+        <h1>Ist die Senne offen?</h1>
+        <p class="intro">Aktueller Durchfahrtsstatus und bekannte Sperrzeiten am Truppenübungsplatz Senne.</p>
+      </div>
+      <div class="display-controls" aria-label="Darstellung anpassen">
+        <button type="button" id="theme-toggle" aria-label="Helles oder dunkles Design umschalten">◐ <span>Design</span></button>
+        <button type="button" id="cb-toggle" aria-label="Farbenblindheitsmodus umschalten">◉ <span>Kontrast</span></button>
+      </div>
+    </header>
 
-  <aside class="side-rail-ad side-rail-left" aria-label="Projekt unterstützen links">
-    <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
-    <p>Dieses Projekt lebt von Menschen wie dir. Wenn dir die Seite hilft, unterstütze den Betrieb mit einem Hinweis, Feedback oder einer kleinen Spende.</p>
-    <p>Du betreibst ein lokales Geschäft, einen Verein oder ein Event in der Region? Dann kannst du diese Fläche nutzen, um auf dein Angebot aufmerksam zu machen und gleichzeitig dieses freie Projekt zu unterstützen.</p>
-    <p>Bei Interesse freue ich mich über eine kurze Nachricht mit deinem Vorschlag für Inhalt und Laufzeit.</p>
-  </aside>
-  <aside class="side-rail-ad side-rail-right" aria-label="Projekt unterstützen rechts">
-    <p><strong>Hier könnte Ihre Werbung stehen 😄</strong></p>
-    <p>Diese Seite wird privat gepflegt und regelmäßig aktualisiert, damit alle schnell sehen, ob die Senne geöffnet ist. Damit das so bleibt, hilft jede Form von Unterstützung.</p>
-    <p>Wenn du die Seite nützlich findest, teile sie gern mit anderen, gib Feedback oder unterstütze den Betrieb mit einer kleinen Spende.</p>
-    <p>Du möchtest hier Werbung platzieren? Dann melde dich gern – fair, transparent und passend zum Projekt.</p>
-  </aside>
-
-  <main class="container">
-    <h1>Senne Öffnungszeiten</h1>
-    <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
-    <section class="mobile-upcoming">
-      <h2>Heute & kommende Tage</h2>
-      {% if upcoming_days %}
-      <ul class="upcoming-list">
-        {% for item in upcoming_days %}
-        <li class="upcoming-item {{ item.color }} {% if item.is_today %}today{% endif %}">
-          <span class="upcoming-date">{{ item.date_display }}</span>
-          <span class="upcoming-label">{{ item.label }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p>Keine zukünftigen Termine verfügbar.</p>
-      {% endif %}
+    <section class="status-hero {{ header_color }}" id="status-bar" aria-live="polite" aria-labelledby="current-status">
+      <div class="status-icon" id="status-icon" aria-hidden="true">{{ "✓" if header_color == "green" else "✕" if header_color == "red" else "↕" if header_color == "yellow" else "?" }}</div>
+      <div>
+        <p class="status-kicker">Truppenübungsplatz Senne</p>
+        <h2 id="current-status">{{ header_label }}</h2>
+        <p class="last-update">Zuletzt aktualisiert: <time id="last-update">{{ last_fetch_display }}</time></p>
+      </div>
     </section>
 
-    <section class="controls calendar-controls">
-      <button type="button" id="theme-toggle">🌗 Hell/Dunkel</button>
-      <button type="button" id="cb-toggle">🎨 Farbschwäche-Modus</button>
-    </section>
-
-    <section class="legend">
-      <h2>Legende</h2>
-      <ul>
-        <li><span class="legend-chip green"></span> Geöffnet</li>
-        <li><span class="legend-chip yellow"></span> Öffnet/Schließt heute</li>
-        <li><span class="legend-chip red"></span> Geschlossen</li>
-        <li><span class="legend-chip gray"></span> Unbekannt</li>
-      </ul>
-    </section>
-
-    <div class="calendar-layout">
-      <div class="calendar-main">
-    {% for month in month_blocks %}
-    <section class="month-block">
-      <h2>{{ month.title }}</h2>
-      {% for week in month.weeks %}
-      <div class="calendar-row">
-        <div class="calendar-week-label">KW {{ week.calendar_week }}</div>
-        {% for day in week.days %}
-        <article class="day-card {{ day.color }} {% if day.is_past %}past{% endif %} {% if day.is_today %}today{% endif %} {% if day.is_outside_month %}outside-month{% endif %}">
-          <div class="dow">{{ day.day }}</div>
-          <div class="dom">{{ day.day_num }}</div>
-          <div class="label">{{ day.label }}</div>
+    <section class="next-days" aria-labelledby="next-days-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Schnellübersicht</p><h2 id="next-days-title">Heute und nächste Tage</h2></div>
+      </div>
+      <div class="next-days-grid" id="upcoming-list">
+        {% for item in upcoming_days[:4] %}
+        <article class="summary-card {{ item.color }}{% if item.is_today %} today{% endif %}">
+          <p class="summary-date">{{ item.date_display }}</p>
+          <p class="status-badge"><span aria-hidden="true">●</span> {{ item.label }}</p>
         </article>
         {% endfor %}
       </div>
-      {% endfor %}
-    </section>
-    {% endfor %}
-      </div>
-    </div>
-    <section class="info-box">
-      <p>Die Senne ist eine Heidelandschaft in Ostwestfalen-Lippe und Teil des Naturraums am Teutoburger Wald. Mehr dazu bei <a href="https://de.wikipedia.org/wiki/Senne" target="_blank" rel="noopener noreferrer">Wikipedia</a>.</p>
-      <p class="source-note">Die hier angezeigten Informationen stammen von <a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">bfgnet.de/sennelager-range-access</a> und können auf dieser Webseite ggf. veraltet sein.</p>
+      <p id="upcoming-empty" {% if upcoming_days %}hidden{% endif %}>Keine zukünftigen Termine verfügbar.</p>
     </section>
 
-    <section class="ics-box">
-      <p><strong>Kalender:</strong> Du kannst diesen Kalender auch als sich selbst aktualisierenden Kalender in Google abonnieren.</p>
-      <p><button type="button" id="open-ics-popup">Kalender-Link anzeigen</button></p>
+    <section class="calendar-section" aria-labelledby="calendar-title">
+      <div class="section-heading"><div><p class="eyebrow">Planung</p><h2 id="calendar-title">Bekannte Durchfahrtszeiten</h2></div></div>
+      <div class="legend" aria-label="Statuslegende">
+        <span class="status-badge green"><span aria-hidden="true">✓</span> Geöffnet</span>
+        <span class="status-badge yellow"><span aria-hidden="true">↕</span> Öffnet/schließt heute</span>
+        <span class="status-badge red"><span aria-hidden="true">✕</span> Gesperrt</span>
+        <span class="status-badge gray"><span aria-hidden="true">?</span> Unbekannt</span>
+      </div>
+      <div class="calendar-main" id="calendar-main">
+        {% for month in month_blocks %}
+        <section class="month-block">
+          <h3>{{ month.title }}</h3>
+          {% for week in month.weeks %}
+          <div class="calendar-row">
+            <div class="calendar-week-label">KW {{ week.calendar_week }}</div>
+            {% for day in week.days %}
+            <article class="day-card {{ day.color }}{% if day.is_past %} past{% endif %}{% if day.is_today %} today{% endif %}{% if day.is_outside_month %} outside-month{% endif %}">
+              <div class="dow">{{ day.day }}</div><div class="dom">{{ day.day_num }}</div><div class="label">{{ day.label }}</div>
+            </article>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </section>
+        {% endfor %}
+      </div>
     </section>
+
+    <section class="trust-box" aria-labelledby="trust-title">
+      <h2 id="trust-title">Hinweis zu den Angaben</h2>
+      <p>Die Angaben werden automatisiert aktualisiert. Trotz sorgfältiger Verarbeitung können sich Sperrungen kurzfristig ändern.</p>
+      <dl>
+        <div><dt>Datenquelle</dt><dd><a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">BFG – Sennelager Range Access</a></dd></div>
+        <div><dt>Datenstand</dt><dd><time id="source-last-update">{{ last_fetch_display }}</time></dd></div>
+      </dl>
+      <p class="unofficial-note">Dies ist ein privates Informationsangebot und keine offizielle Webseite der Bundeswehr.</p>
+    </section>
+
+    <section class="calendar-subscribe" aria-labelledby="subscribe-title">
+      <div><h2 id="subscribe-title">Kalender abonnieren</h2><p>Bekannte Öffnungs- und Sperrtage als aktualisierenden Kalender verwenden.</p></div>
+      <button type="button" id="open-ics-popup" aria-label="Link zum Kalender-Abonnement anzeigen">Kalender-Link</button>
+    </section>
+
+    <section class="ad-area" aria-label="Werbung und Unterstützer">
+      <aside class="side-rail-ad side-rail-left"><small>Werbung / Unterstützer</small><img src="/static/ads/left.png" alt="Werbung oder Unterstützer links" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><p class="ad-placeholder" hidden>Werbeplatz verfügbar</p></aside>
+      <aside class="side-rail-ad side-rail-right"><small>Werbung / Unterstützer</small><img src="/static/ads/right.png" alt="Werbung oder Unterstützer rechts" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><p class="ad-placeholder" hidden>Werbeplatz verfügbar</p></aside>
+    </section>
+
     <footer class="site-footer">
-      <p>Privates Projekt ohne Gewähr auf Richtigkeit, Vollständigkeit und Aktualität der dargestellten Daten.</p>
+      <p>Privates Projekt ohne Gewähr auf Richtigkeit, Vollständigkeit und Aktualität.</p>
       <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
     </footer>
   </main>
@@ -121,88 +111,12 @@
   <div class="ics-modal" id="ics-modal" hidden>
     <div class="ics-modal-backdrop" data-close="ics-modal"></div>
     <div class="ics-modal-card" role="dialog" aria-modal="true" aria-labelledby="ics-modal-title">
-      <h2 id="ics-modal-title">ICS-Link für Kalender-Abo</h2>
-      <p>Du kannst den Link per Rechtsklick kopieren oder direkt in deinen Kalender einfügen:</p>
-      <input type="text" id="ics-link-input" readonly>
-      <div class="ics-modal-actions">
-        <button type="button" id="copy-ics-link">Link kopieren</button>
-        <button type="button" data-close="ics-modal">Schließen</button>
-      </div>
+      <h2 id="ics-modal-title">Kalender abonnieren</h2>
+      <p>Diesen Link in der Kalender-App als Abonnement hinzufügen:</p>
+      <input type="text" id="ics-link-input" readonly aria-label="Link zum Kalender-Abonnement">
+      <div class="ics-modal-actions"><button type="button" id="copy-ics-link">Link kopieren</button><button type="button" data-close="ics-modal">Schließen</button></div>
     </div>
   </div>
-
-  <script>
-    (function () {
-      const root = document.documentElement;
-      const body = document.body;
-      const themeKey = 'theme';
-      const cbKey = 'colorblind';
-      const savedTheme = localStorage.getItem(themeKey);
-      const savedCb = localStorage.getItem(cbKey);
-      if (savedTheme === 'dark') body.classList.add('theme-dark');
-      if (savedCb === 'on') body.classList.add('colorblind');
-
-      const themeToggleButton = document.getElementById('theme-toggle');
-      const cbToggleButton = document.getElementById('cb-toggle');
-
-      function syncControlStates() {
-        const darkModeActive = body.classList.contains('theme-dark');
-        themeToggleButton?.classList.toggle('theme-inverse-dark', !darkModeActive);
-        themeToggleButton?.classList.toggle('theme-inverse-light', darkModeActive);
-        cbToggleButton?.classList.toggle('active', body.classList.contains('colorblind'));
-      }
-
-      syncControlStates();
-
-      themeToggleButton?.addEventListener('click', function () {
-        body.classList.toggle('theme-dark');
-        localStorage.setItem(themeKey, body.classList.contains('theme-dark') ? 'dark' : 'light');
-        syncControlStates();
-      });
-
-      cbToggleButton?.addEventListener('click', function () {
-        body.classList.toggle('colorblind');
-        localStorage.setItem(cbKey, body.classList.contains('colorblind') ? 'on' : 'off');
-        syncControlStates();
-      });
-
-            const icsModal = document.getElementById('ics-modal');
-      const icsInput = document.getElementById('ics-link-input');
-      const icsLink = window.location.origin + '/calendar.ics';
-      if (icsInput) icsInput.value = icsLink;
-
-      document.getElementById('open-ics-popup')?.addEventListener('click', function () {
-        if (icsModal) icsModal.hidden = false;
-      });
-
-      document.getElementById('copy-ics-link')?.addEventListener('click', async function () {
-        if (!icsInput) return;
-        icsInput.select();
-        icsInput.setSelectionRange(0, 99999);
-        try {
-          await navigator.clipboard.writeText(icsInput.value);
-          window.alert('Link in die Zwischenablage kopiert.');
-        } catch (err) {
-          try {
-            const copied = document.execCommand('copy');
-            if (copied) {
-              window.alert('Link in die Zwischenablage kopiert.');
-              return;
-            }
-          } catch (fallbackErr) {
-            // no-op; show generic message below
-          }
-          window.alert('Kopieren fehlgeschlagen. Bitte den Link im Feld manuell kopieren.');
-        }
-      });
-
-      document.querySelectorAll('[data-close="ics-modal"]').forEach(function (el) {
-        el.addEventListener('click', function () {
-          if (icsModal) icsModal.hidden = true;
-        });
-      });
-
-    })();
-  </script>
+  <script src="/static/app.js" defer></script>
 </body>
 </html>
