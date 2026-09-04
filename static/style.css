@@ -63,6 +63,7 @@ h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.12; }
 .day-card.today.green { background: var(--open-soft); } .day-card.today.red { background: var(--closed-soft); }
 .day-card.today.yellow { background: var(--changing-soft); } .day-card.today.gray { background: var(--unknown-soft); }
 .day-card.today::after { content: "HEUTE"; position: absolute; top: 7px; right: 6px; padding: 1px 4px; border-radius: 3px; color: var(--surface); background: var(--text); font-size: .56rem; font-weight: 900; }
+html[lang="en"] .day-card.today::after { content: "TODAY"; }
 .day-card.past { opacity: .48; } .day-card.outside-month { opacity: .3; }
 .trust-box p { margin: 8px 0; } .trust-box dl { display: flex; flex-wrap: wrap; gap: 12px 34px; margin: 14px 0; }
 .trust-box dl div { display: grid; gap: 2px; } .trust-box dt { color: var(--muted); font-size: .76rem; font-weight: 800; text-transform: uppercase; }
@@ -74,7 +75,8 @@ h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.12; }
 .side-rail-ad { position: fixed; top: 50%; width: 160px; padding: 7px; transform: translateY(-50%); border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--muted); z-index: 10; }
 .side-rail-ad small { display: block; margin-bottom: 5px; text-align: center; font-size: .65rem; }
 .side-rail-ad img { display: block; width: 100%; height: auto; border-radius: 5px; }
-.side-rail-ad .ad-placeholder { margin: 0; padding: 25px 5px; text-align: center; font-size: .78rem; }
+.side-rail-ad .ad-placeholder { margin: 0; padding: 18px 7px; text-align: center; font-size: .78rem; }
+.side-rail-ad .ad-placeholder p { margin: 8px 0 0; }
 .side-rail-left { left: max(8px, calc((100vw - var(--content)) / 2 - 176px)); } .side-rail-right { right: max(8px, calc((100vw - var(--content)) / 2 - 176px)); }
 .site-footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 20px; padding: 15px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
 .site-footer p { margin: 0; }

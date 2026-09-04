@@ -81,10 +81,32 @@ def upload_ftp_tree(ftp: ftplib.FTP, source: Path) -> int:
         with local_file.open("rb") as handle:
             ftp.storbinary(f"STOR {temporary_name}", handle)
         try:
-            ftp.delete(relative.name)
+            # Most FTPS servers implement RNTO as an atomic replacement.  In
+            # particular, do not delete the live file first: a failed RNTO
+            # must leave the last successfully published version available.
+            ftp.rename(temporary_name, relative.name)
         except ftplib.error_perm:
-            pass
-        ftp.rename(temporary_name, relative.name)
+            backup_name = f".{relative.name}.previous"
+            try:
+                ftp.delete(backup_name)
+            except ftplib.error_perm:
+                pass
+            try:
+                ftp.rename(relative.name, backup_name)
+            except ftplib.error_perm:
+                # There was no existing destination, so retry the commit.
+                ftp.rename(temporary_name, relative.name)
+            else:
+                try:
+                    ftp.rename(temporary_name, relative.name)
+                except ftplib.all_errors:
+                    # Roll back before propagating the publication failure.
+                    ftp.rename(backup_name, relative.name)
+                    raise
+                try:
+                    ftp.delete(backup_name)
+                except ftplib.error_perm:
+                    pass
         count += 1
     ftp.cwd(base)
     return count
@@ -139,10 +161,28 @@ def upload_sftp_tree(sftp: Any, source: Path) -> int:
         temporary = posixpath.join(posixpath.dirname(remote_file), f".{posixpath.basename(remote_file)}.uploading")
         sftp.put(str(local_file), temporary)
         try:
-            sftp.remove(remote_file)
-        except OSError:
-            pass
-        sftp.rename(temporary, remote_file)
+            # OpenSSH's extension atomically overwrites an existing path.
+            sftp.posix_rename(temporary, remote_file)
+        except (AttributeError, OSError):
+            backup = posixpath.join(posixpath.dirname(remote_file), f".{posixpath.basename(remote_file)}.previous")
+            try:
+                sftp.remove(backup)
+            except OSError:
+                pass
+            try:
+                sftp.rename(remote_file, backup)
+            except OSError:
+                sftp.rename(temporary, remote_file)
+            else:
+                try:
+                    sftp.rename(temporary, remote_file)
+                except OSError:
+                    sftp.rename(backup, remote_file)
+                    raise
+                try:
+                    sftp.remove(backup)
+                except OSError:
+                    pass
         count += 1
     return count
 
