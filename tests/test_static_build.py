@@ -1,10 +1,12 @@
+import ftplib
 from pathlib import Path
 
 import pytest
 
 from app.build_static import EXPORTS, build, validate_base_url
 from app.build_data import build as build_data
-from app.deploy_ftp import connection_settings, selected_protocol
+from app.deploy_ftp import connection_settings, selected_protocol, upload_ftp_tree, upload_sftp_tree
+from app.web import build_ics
 
 
 def test_build_writes_every_route_and_static_assets(tmp_path: Path) -> None:
@@ -19,8 +21,16 @@ def test_build_writes_every_route_and_static_assets(tmp_path: Path) -> None:
     assert (output / "data/status_data.json").is_file()
     assert "https://senne.example/" in (output / "index.html").read_text(encoding="utf-8")
     assert "https://senne.example/sitemap.xml" in (output / "robots.txt").read_text(encoding="utf-8")
+    assert "Disallow: /datenschutz" in (output / "robots.txt").read_text(encoding="utf-8")
     assert "noindex, nofollow" in (output / "impressum/index.html").read_text(encoding="utf-8")
     assert "X-Robots-Tag" in (output / "impressum/.htaccess").read_text(encoding="utf-8")
+    assert "X-Robots-Tag" in (output / "datenschutz/.htaccess").read_text(encoding="utf-8")
+
+
+def test_calendar_uses_short_event_titles() -> None:
+    calendar = build_ics({"2026-09-04": {"status": "closed"}})
+    assert "SUMMARY:Senne – " in calendar
+    assert "SUMMARY:Senne Öffnungszeiten" not in calendar
 
 
 @pytest.mark.parametrize("value", ["example.de", "ftp://example.de", "https://example.de/path"])
@@ -56,3 +66,57 @@ def test_upload_url_contains_protocol_server_port_and_target(monkeypatch: pytest
     monkeypatch.setenv("FTP_URL", "sftp://upload.example:22/public_html/site")
     assert selected_protocol() == "sftp"
     assert connection_settings() == ("upload.example", 22, "/public_html/site")
+
+
+def test_ftps_failed_replacement_restores_live_file(tmp_path: Path) -> None:
+    (tmp_path / "status_data.json").write_text("new", encoding="utf-8")
+
+    class FakeFtp:
+        files = {"status_data.json": b"old"}
+
+        def pwd(self): return "/"
+        def cwd(self, _path): return None
+        def storbinary(self, command, handle): self.files[command.removeprefix("STOR ")] = handle.read()
+        def delete(self, name):
+            if name not in self.files:
+                raise ftplib.error_perm("missing")
+            del self.files[name]
+        def rename(self, source, destination):
+            if source == ".status_data.json.uploading" and destination == "status_data.json":
+                raise ftplib.error_perm("commit rejected")
+            if source not in self.files:
+                raise ftplib.error_perm("missing")
+            self.files[destination] = self.files.pop(source)
+
+    ftp = FakeFtp()
+    with pytest.raises(Exception, match="commit rejected"):
+        upload_ftp_tree(ftp, tmp_path)
+    assert ftp.files["status_data.json"] == b"old"
+
+
+def test_sftp_failed_replacement_restores_live_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    local = tmp_path / "calendar.ics"
+    local.write_text("new", encoding="utf-8")
+    monkeypatch.setenv("FTP_URL", "sftp://upload.example/site")
+
+    class FakeSftp:
+        files = {"/site/calendar.ics": b"old"}
+        def stat(self, _path): return object()
+        def mkdir(self, _path): return None
+        def put(self, source, destination): self.files[destination] = Path(source).read_bytes()
+        def posix_rename(self, _source, _destination): raise OSError("unsupported")
+        def remove(self, path):
+            if path not in self.files:
+                raise OSError("missing")
+            del self.files[path]
+        def rename(self, source, destination):
+            if source.endswith(".uploading") and destination == "/site/calendar.ics":
+                raise OSError("commit rejected")
+            if source not in self.files:
+                raise OSError("missing")
+            self.files[destination] = self.files.pop(source)
+
+    sftp = FakeSftp()
+    with pytest.raises(OSError, match="commit rejected"):
+        upload_sftp_tree(sftp, tmp_path)
+    assert sftp.files["/site/calendar.ics"] == b"old"

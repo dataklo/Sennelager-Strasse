@@ -26,6 +26,7 @@
         <p class="intro">Aktueller Durchfahrtsstatus und bekannte Sperrzeiten am Truppenübungsplatz Senne.</p>
       </div>
       <div class="display-controls" aria-label="Darstellung anpassen">
+        <button type="button" id="language-toggle" aria-label="Switch language to English">EN <span>English</span></button>
         <button type="button" id="theme-toggle" aria-label="Helles oder dunkles Design umschalten">◐ <span>Design</span></button>
         <button type="button" id="cb-toggle" aria-label="Farbenblindheitsmodus umschalten">◉ <span>Kontrast</span></button>
       </div>
@@ -36,7 +37,7 @@
       <div>
         <p class="status-kicker">Truppenübungsplatz Senne</p>
         <h2 id="current-status">{{ header_label }}</h2>
-        <p class="last-update">Zuletzt aktualisiert: <time id="last-update">{{ last_fetch_display }}</time></p>
+        <p class="last-update"><span id="last-update-label">Zuletzt aktualisiert:</span> <time id="last-update">{{ last_fetch_display }}</time></p>
       </div>
     </section>
 
@@ -58,10 +59,10 @@
     <section class="calendar-section" aria-labelledby="calendar-title">
       <div class="section-heading"><div><p class="eyebrow">Planung</p><h2 id="calendar-title">Bekannte Durchfahrtszeiten</h2></div></div>
       <div class="legend" aria-label="Statuslegende">
-        <span class="status-badge green"><span aria-hidden="true">✓</span> Geöffnet</span>
-        <span class="status-badge yellow"><span aria-hidden="true">↕</span> Öffnet/schließt heute</span>
-        <span class="status-badge red"><span aria-hidden="true">✕</span> Gesperrt</span>
-        <span class="status-badge gray"><span aria-hidden="true">?</span> Unbekannt</span>
+        <span class="status-badge green"><span aria-hidden="true">✓</span> <span id="legend-open">Geöffnet</span></span>
+        <span class="status-badge yellow"><span aria-hidden="true">↕</span> <span id="legend-changing">Öffnet/schließt heute</span></span>
+        <span class="status-badge red"><span aria-hidden="true">✕</span> <span id="legend-closed">Gesperrt</span></span>
+        <span class="status-badge gray"><span aria-hidden="true">?</span> <span id="legend-unknown">Unbekannt</span></span>
       </div>
       <div class="calendar-main" id="calendar-main">
         {% for month in month_blocks %}
@@ -84,7 +85,7 @@
 
     <section class="trust-box" aria-labelledby="trust-title">
       <h2 id="trust-title">Hinweis zu den Angaben</h2>
-      <p>Die Angaben werden automatisiert aktualisiert. Trotz sorgfältiger Verarbeitung können sich Sperrungen kurzfristig ändern.</p>
+      <p id="trust-copy">Die Angaben werden regelmäßig auf Grundlage der veröffentlichten Informationen aktualisiert. Trotz sorgfältiger Prüfung können sich Sperrungen kurzfristig ändern.</p>
       <dl>
         <div><dt>Datenquelle</dt><dd><a href="https://bfgnet.de/sennelager-range-access" target="_blank" rel="noopener noreferrer">BFG – Sennelager Range Access</a></dd></div>
         <div><dt>Datenstand</dt><dd><time id="source-last-update">{{ last_fetch_display }}</time></dd></div>
@@ -98,8 +99,8 @@
     </section>
 
     <section class="ad-area" aria-label="Werbung und Unterstützer">
-      <aside class="side-rail-ad side-rail-left"><small>Werbung / Unterstützer</small><img src="/static/ads/left.png" alt="Werbung oder Unterstützer links" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><p class="ad-placeholder" hidden>Werbeplatz verfügbar</p></aside>
-      <aside class="side-rail-ad side-rail-right"><small>Werbung / Unterstützer</small><img src="/static/ads/right.png" alt="Werbung oder Unterstützer rechts" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><p class="ad-placeholder" hidden>Werbeplatz verfügbar</p></aside>
+      <aside class="side-rail-ad side-rail-left"><small>Werbung / Unterstützer</small><img src="/static/ads/left.png" alt="Werbung oder Unterstützer links" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><div class="ad-placeholder" hidden><strong>Hier könnte Ihre Werbung stehen 😄</strong><p>Unterstützen Sie dieses private Projekt mit einem passenden Angebot aus der Region.</p></div></aside>
+      <aside class="side-rail-ad side-rail-right"><small>Werbung / Unterstützer</small><img src="/static/ads/right.png" alt="Werbung oder Unterstützer rechts" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><div class="ad-placeholder" hidden><strong>Werbeplatz verfügbar</strong><p>Ideal für lokale Geschäfte, Vereine und Veranstaltungen.</p></div></aside>
     </section>
 
     <footer class="site-footer">

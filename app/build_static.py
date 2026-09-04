@@ -56,10 +56,11 @@ def build(output_dir: Path, base_url: str) -> None:
         "Options -Indexes\nDirectoryIndex index.html\nAddType text/calendar .ics\n",
         encoding="utf-8",
     )
-    (output_dir / "impressum" / ".htaccess").write_text(
-        'Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"\n',
-        encoding="utf-8",
-    )
+    for legal_directory in ("impressum", "datenschutz"):
+        (output_dir / legal_directory / ".htaccess").write_text(
+            'Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"\n',
+            encoding="utf-8",
+        )
 
 
 def main() -> None:

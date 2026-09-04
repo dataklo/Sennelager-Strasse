@@ -214,7 +214,7 @@ def build_ics(schedule: dict) -> str:
             f"DTSTAMP:{stamp}",
             f"DTSTART;VALUE=DATE:{start}",
             f"DTEND;VALUE=DATE:{end}",
-            f"SUMMARY:Senne Öffnungszeiten – {label}",
+            f"SUMMARY:Senne – {label}",
             "DESCRIPTION:Privates Projekt ohne Gewähr. Quelle: bfgnet.de/sennelager-range-access",
             "END:VEVENT",
         ])))
@@ -245,7 +245,13 @@ def calendar_ics():
 @app.route("/robots.txt")
 def robots_txt():
     sitemap_url = build_absolute_url("/sitemap.xml")
-    content = f"User-agent: *\nAllow: /\nDisallow: /impressum\nSitemap: {sitemap_url}\n"
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /impressum\n"
+        "Disallow: /datenschutz\n"
+        f"Sitemap: {sitemap_url}\n"
+    )
     return Response(content, mimetype="text/plain")
 
 
