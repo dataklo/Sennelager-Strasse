@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page_title }}</title>
-  <meta name="description" content="{{ meta_description }}">
+  <title>Senne offen? – Aktueller Durchfahrtsstatus</title>
+  <meta name="description" content="Aktueller Durchfahrtsstatus und bekannte Sperrzeiten für die Straßen durch den Truppenübungsplatz Senne.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="{{ canonical_url }}">
   <meta property="og:type" content="website">
@@ -15,15 +15,16 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<header class="status-bar {{ header_color }}">
-  <div class="status-inner">Truppenübungsplatz ist aktuell <strong>{{ header_label }}</strong></div>
-</header>
-<main class="container">
+<main class="legal-page">
   <h1>Ist die Senne heute geöffnet?</h1>
-  <p>Stand heute ({{ seo_today_iso }}): <strong>{{ seo_status_label }}</strong></p>
-  <p class="last-update">Letzte Aktualisierung: {{ last_fetch_display }}</p>
+  <section class="status-hero {{ header_color }}" id="status-bar" aria-live="polite">
+    <div class="status-icon" id="status-icon" aria-hidden="true">?</div>
+    <div><p class="status-kicker">Truppenübungsplatz Senne</p><h2 id="current-status">{{ seo_status_label }}</h2><p class="last-update">Zuletzt aktualisiert: <time id="last-update">{{ last_fetch_display }}</time></p></div>
+  </section>
+  <p>Stand heute: <span id="today-date">{{ seo_today_iso }}</span></p>
   <p>Hier geht es zur kompletten Übersicht mit allen kommenden Tagen und Kalender-Abo:</p>
   <p><a href="/">Zur Hauptseite Senne Öffnungszeiten</a></p>
 </main>
+<script src="/static/app.js" defer></script>
 </body>
 </html>

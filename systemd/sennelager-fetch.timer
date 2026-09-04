@@ -1,5 +1,5 @@
 [Unit]
-Description=Daily fetch timer for Sennelager Range
+Description=Daily static website publication timer
 
 [Timer]
 OnCalendar=*-*-* 00:01:00

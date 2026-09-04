@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import threading
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 import re
 
@@ -18,24 +18,24 @@ STALE_MAX_AGE_HOURS = 30
 REFRESH_LOCK = threading.Lock()
 
 COLOR_MAP = {"open": "green", "closed": "red", "changing": "yellow", "unknown": "gray"}
-LABEL_MAP = {"open": "Geöffnet", "closed": "Geschlossen", "changing": "Öffnet/Schließt heute", "unknown": "Unbekannt"}
+LABEL_MAP = {"open": "Geöffnet", "closed": "Gesperrt", "changing": "Öffnet/Schließt heute", "unknown": "Unbekannt"}
 
 
 def header_status_label(today_row: dict) -> str:
     status = today_row.get("status", "unknown")
     if status == "open":
-        return "Geöffnet"
+        return "Durchfahrt aktuell möglich"
     if status == "closed":
-        return "Geschlossen"
+        return "Durchfahrt aktuell gesperrt"
     if status != "changing":
         return "Unbekannt"
 
     times_text = str(today_row.get("times", "")).lower()
     if re.search(r"(open\s+from|opens?\s+from|closed\s+until)", times_text):
-        return "wird heute Geöffnet"
+        return "Durchfahrt öffnet heute"
     if re.search(r"(closed\s+from|closes?\s+from|open\s+until)", times_text):
-        return "wird heute geschlossen"
-    return "Öffnet/Schließt heute"
+        return "Durchfahrt schließt heute"
+    return "Durchfahrtsstatus ändert sich heute"
 
 
 def load_data() -> dict:
@@ -62,6 +62,8 @@ def needs_refresh(last_fetch_utc: str | None) -> bool:
 
 
 def refresh_if_stale() -> None:
+    if app.config.get("STATIC_EXPORT"):
+        return
     data = load_data()
     if not needs_refresh(data.get("last_fetch_utc")):
         return
@@ -126,6 +128,7 @@ def month_blocks(today: date, schedule: dict) -> list[dict]:
                 row = schedule.get(d.isoformat(), {"status": "unknown"})
                 st = row.get("status", "unknown")
                 week_days.append({
+                    "date_iso": d.isoformat(),
                     "day": d.strftime("%a"),
                     "day_num": d.day,
                     "label": LABEL_MAP.get(st, "Unbekannt"),
@@ -140,7 +143,7 @@ def month_blocks(today: date, schedule: dict) -> list[dict]:
             })
             week_cursor += timedelta(days=7)
 
-        blocks.append({"title": cursor.strftime("%B %Y"), "weeks": weeks})
+        blocks.append({"title": cursor.strftime("%B %Y"), "month_iso": cursor.strftime("%Y-%m"), "weeks": weeks})
         cursor = next_month_start
 
     return blocks
@@ -201,7 +204,7 @@ def build_ics(schedule: dict) -> str:
             continue
         st = row.get("status", "unknown")
         label = LABEL_MAP.get(st, "Unbekannt")
-        stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         start = d.strftime("%Y%m%d")
         end = (d + timedelta(days=1)).strftime("%Y%m%d")
         uid = f"senne-{iso}-{st}@range-access"
@@ -249,7 +252,7 @@ def robots_txt():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     page_url = build_absolute_url("/")
-    now = datetime.utcnow().strftime("%Y-%m-%d")
+    now = datetime.now(UTC).strftime("%Y-%m-%d")
     xml = (
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"

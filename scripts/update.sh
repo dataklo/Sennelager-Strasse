@@ -29,13 +29,19 @@ git pull --ff-only origin "$BRANCH"
 
 "$APP_DIR/.venv/bin/pip" install --upgrade -r requirements.txt
 
-install -m 644 systemd/sennelager-web.service /etc/systemd/system/sennelager-web.service
 install -m 644 systemd/sennelager-fetch.service /etc/systemd/system/sennelager-fetch.service
 install -m 644 systemd/sennelager-fetch.timer /etc/systemd/system/sennelager-fetch.timer
+install -m 644 config/ftp.env.example /etc/sennelager-range.env.example
+chmod +x scripts/publish.sh scripts/deploy_full.sh
 
 systemctl daemon-reload
-systemctl restart sennelager-web.service
+systemctl disable --now sennelager-web.service 2>/dev/null || true
 systemctl restart sennelager-fetch.timer
-systemctl start sennelager-fetch.service || true
+
+if [[ -f /etc/sennelager-range.env ]]; then
+  "$APP_DIR/scripts/deploy_full.sh"
+else
+  echo "[WARNUNG] /etc/sennelager-range.env fehlt; Veröffentlichung übersprungen."
+fi
 
 echo "[OK] Update abgeschlossen (Branch: $BRANCH)"
