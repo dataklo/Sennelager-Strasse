@@ -86,27 +86,15 @@ def upload_ftp_tree(ftp: ftplib.FTP, source: Path) -> int:
             # must leave the last successfully published version available.
             ftp.rename(temporary_name, relative.name)
         except ftplib.error_perm:
-            backup_name = f".{relative.name}.previous"
+            # FTP has no second portable operation that can replace an
+            # existing path atomically.  Moving the live file aside before a
+            # retry creates an outage window if this process or connection
+            # dies.  Fail safely instead and discard only the staged upload.
             try:
-                ftp.delete(backup_name)
+                ftp.delete(temporary_name)
             except ftplib.error_perm:
                 pass
-            try:
-                ftp.rename(relative.name, backup_name)
-            except ftplib.error_perm:
-                # There was no existing destination, so retry the commit.
-                ftp.rename(temporary_name, relative.name)
-            else:
-                try:
-                    ftp.rename(temporary_name, relative.name)
-                except ftplib.all_errors:
-                    # Roll back before propagating the publication failure.
-                    ftp.rename(backup_name, relative.name)
-                    raise
-                try:
-                    ftp.delete(backup_name)
-                except ftplib.error_perm:
-                    pass
+            raise
         count += 1
     ftp.cwd(base)
     return count
@@ -164,25 +152,18 @@ def upload_sftp_tree(sftp: Any, source: Path) -> int:
             # OpenSSH's extension atomically overwrites an existing path.
             sftp.posix_rename(temporary, remote_file)
         except (AttributeError, OSError):
-            backup = posixpath.join(posixpath.dirname(remote_file), f".{posixpath.basename(remote_file)}.previous")
+            # A standard SFTP rename may also support atomic replacement.  If
+            # it rejects the overwrite, never move the live file out of the
+            # way: that would make it disappear if the deployment is
+            # interrupted before rollback.
             try:
-                sftp.remove(backup)
-            except OSError:
-                pass
-            try:
-                sftp.rename(remote_file, backup)
-            except OSError:
                 sftp.rename(temporary, remote_file)
-            else:
+            except OSError:
                 try:
-                    sftp.rename(temporary, remote_file)
-                except OSError:
-                    sftp.rename(backup, remote_file)
-                    raise
-                try:
-                    sftp.remove(backup)
+                    sftp.remove(temporary)
                 except OSError:
                     pass
+                raise
         count += 1
     return count
 
